@@ -1,129 +1,181 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-const projects = [
-  {
-    index: "01",
-    headline: "Giving a database a voice.",
-    client: "LLM Chatbot — Master&rsquo;s Thesis",
-    description:
-      "An LLM-powered chatbot capable of making live calls against a structured database. Translates plain-language questions into real-time queries. The project explored interface design for AI systems that aren't always predictable.",
-    tags: ["AI / LLM", "Tool calling", "UX for AI", "Research"],
-  },
-  {
-    index: "02",
-    headline: "Patchwork for the coolest bike shop in Stockholm.",
-    client: "And The Revolution — WordPress",
-    description:
-      "And The Revolution is a modular bicycle concept store in central Stockholm. Their WordPress site had accumulated interaction bugs and design inconsistencies that undermined the brand. Resolved core technical issues and contributed to a design lift that aligned the site with the shop's bold identity.",
-    tags: ["WordPress", "UI/UX", "Bug fixing", "Brand consistency"],
-  },
-  {
-    index: "03",
-    headline: "Track workouts and stay focused.",
-    client: "Stronglift Tracker — Personal Project",
-    description:
-      "A personal web app built around the Stronglift 5×5 training programme. Lets me log sessions, track progression over time, and access assistive features. No over-engineering — just a tool that solves a real need.",
-    tags: ["Personal project", "Frontend", "Data & tracking"],
-  },
-];
-
-const ease = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
-
-const inView = (delay = 0) => ({
-  initial: { opacity: 0, y: 32 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.7, ease, delay },
-});
+import { projects } from "@/lib/projects";
 
 export default function Projects() {
-  return (
-    <section id="projects" className="px-8 md:px-16 py-24 md:py-36">
-      <div className="max-w-[1200px] mx-auto">
-        {/* Section index */}
-        <motion.p
-          className="text-sm uppercase tracking-[0.2em] text-accent font-display mb-12"
-          {...inView(0)}
-        >
-          02 / Projects
-        </motion.p>
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [isCardLifted, setIsCardLifted] = useState(false);
+  const hideTimerRef = useRef<number | null>(null);
+  const activeProject = useMemo(
+    () => projects[activeIndex] ?? projects[0],
+    [activeIndex],
+  );
 
-        <div className="space-y-4">
-          {projects.map((project, i) => (
-            <ProjectCard key={project.index} project={project} delay={i * 0.1} />
-          ))}
+  const clearHideTimer = () => {
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+  };
+
+  const showPreview = (index: number) => {
+    clearHideTimer();
+    setActiveIndex(index);
+    setIsPreviewVisible(true);
+  };
+
+  const keepPreviewVisible = () => {
+    clearHideTimer();
+    setIsPreviewVisible(true);
+  };
+
+  const queueHidePreview = () => {
+    clearHideTimer();
+    hideTimerRef.current = window.setTimeout(() => {
+      setIsPreviewVisible(false);
+    }, 2500);
+  };
+
+  useEffect(() => {
+    return () => clearHideTimer();
+  }, []);
+
+  return (
+    <section id="projects" className="-mt-14 px-6 py-20 sm:-mt-20 sm:py-24">
+      <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-start">
+        <Link
+          href={`/projects/${activeProject.slug}`}
+          onMouseEnter={() => {
+            keepPreviewVisible();
+            setIsCardLifted(true);
+          }}
+          onMouseLeave={() => {
+            setIsCardLifted(false);
+            queueHidePreview();
+          }}
+          onFocus={() => {
+            keepPreviewVisible();
+            setIsCardLifted(true);
+          }}
+          onBlur={() => {
+            setIsCardLifted(false);
+            queueHidePreview();
+          }}
+          aria-label={`Open ${activeProject.title} case study`}
+          className={`relative overflow-hidden rounded-4xl border border-zinc-200 bg-zinc-900 text-white transition-all duration-500 ease-out lg:sticky lg:top-24 ${
+            isPreviewVisible
+              ? isCardLifted
+                ? "translate-x-0 scale-[1.045] opacity-100 shadow-2xl"
+                : "translate-x-0 scale-[1.02] opacity-100 shadow-2xl"
+              : "-translate-x-10 scale-[0.985] opacity-0"
+          }`}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeProject.slug}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+              className="relative w-full"
+            >
+              {activeProject.heroImage ? (
+                <Image
+                  src={activeProject.heroImage}
+                  alt={activeProject.title}
+                  className="h-[360px] w-full object-cover opacity-80 sm:h-[420px]"
+                />
+              ) : (
+                <div className="project-image-placeholder h-[360px] w-full sm:h-[420px]" />
+              )}
+              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-900/40 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+                <p className="text-xs uppercase tracking-[0.18em] text-zinc-300">
+                  {activeProject.category}
+                </p>
+                <h3 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+                  {activeProject.title}
+                </h3>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-zinc-200 sm:text-base">
+                  {activeProject.teaser}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {activeProject.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-zinc-500/60 bg-zinc-700/40 px-2.5 py-1 text-xs text-zinc-100"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                {activeProject.previewImages[0] ? (
+                  <Image
+                    src={activeProject.previewImages[0]}
+                    alt={`${activeProject.title} preview`}
+                    className="mt-5 h-28 w-full rounded-xl border border-white/10 object-cover"
+                  />
+                ) : (
+                  <div
+                    className="project-image-placeholder mt-5 h-28 w-full rounded-xl border border-white/10"
+                    aria-hidden
+                  />
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </Link>
+
+        <div onMouseLeave={queueHidePreview} onBlur={queueHidePreview}>
+          <div className="mb-5 flex items-end justify-between">
+            <h2 className="text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl">
+              Projects
+            </h2>
+            <span className="text-sm text-zinc-400">{projects.length}</span>
+          </div>
+          <ul className="divide-y divide-zinc-200 border-y border-zinc-200">
+            {projects.map((project, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <li
+                  key={project.slug}
+                  className="relative"
+                  onMouseEnter={() => showPreview(index)}
+                >
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    onFocus={() => showPreview(index)}
+                    className="group flex items-center justify-between gap-6 py-5 transition-colors hover:bg-zinc-50 focus-visible:bg-zinc-50 focus-visible:outline-none"
+                  >
+                    <span
+                      className={`text-xl tracking-tight transition-colors sm:text-2xl ${
+                        isActive
+                          ? "font-semibold text-zinc-900"
+                          : "font-medium text-zinc-700 group-hover:text-zinc-900"
+                      }`}
+                    >
+                      {project.shortTitle}
+                    </span>
+                    <div className="text-right">
+                      <p className="text-sm text-zinc-600">{project.category}</p>
+                      <p className="text-xs text-zinc-400">{project.timeframe}</p>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-4 text-sm text-zinc-500">
+            Hover to preview, click to open the full case study.
+          </p>
         </div>
       </div>
     </section>
-  );
-}
-
-function ProjectCard({
-  project,
-  delay,
-}: {
-  project: (typeof projects)[number];
-  delay: number;
-}) {
-  return (
-    <motion.article
-      className="group relative border border-border rounded-sm p-8 md:p-10 bg-canvas hover:bg-surface hover:-translate-y-1 transition-all duration-300"
-      style={{
-        boxShadow: "0 0 0 0 rgba(255,77,0,0)",
-        transition: "transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease",
-      }}
-      whileHover={{
-        boxShadow: "0 0 0 1px rgba(255,77,0,0.4)",
-      }}
-      {...{
-        initial: { opacity: 0, y: 32 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true, margin: "-60px" },
-        transition: { duration: 0.7, ease, delay },
-      }}
-    >
-      {/* Accent top border on hover */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 rounded-t-sm" />
-
-      <div className="grid md:grid-cols-[auto_1fr_auto] gap-6 md:gap-10 items-start">
-        {/* Index */}
-        <span className="text-sm font-display text-muted/50 tabular-nums pt-1">
-          {project.index}
-        </span>
-
-        {/* Content */}
-        <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted font-display">
-            {project.client.replace(/&rsquo;/g, "'")}
-          </p>
-          <h3
-            className="font-display font-bold text-cream leading-tight"
-            style={{ fontSize: "clamp(22px, 2.5vw, 32px)" }}
-          >
-            {project.headline}
-          </h3>
-          <p className="text-base text-muted leading-relaxed font-body max-w-2xl">
-            {project.description}
-          </p>
-          <div className="flex flex-wrap gap-2 pt-2">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-xs uppercase tracking-[0.12em] text-muted border border-border px-3 py-1 font-display"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Arrow */}
-        <span className="text-muted group-hover:text-accent group-hover:translate-x-1 transition-all duration-200 text-xl mt-1 hidden md:block">
-          →
-        </span>
-      </div>
-    </motion.article>
   );
 }

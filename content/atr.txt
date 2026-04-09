@@ -1,0 +1,2 @@
+For the bicycle store And-The-Revolution I have made cleaned up the wordpress site to use styling according to the design system, redesigned product pages to extend interaction, and given their bicycle builder a quick improvement in user experience.
+

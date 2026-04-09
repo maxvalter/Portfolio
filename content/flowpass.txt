@@ -1,0 +1,1 @@
+In collaboration with Flowpass, I have built an LLM-driven chatbot that makes tool calls to the backend to enable fetching platform data through natural language. 

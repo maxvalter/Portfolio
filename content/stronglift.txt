@@ -1,0 +1,2 @@
+A mobile web application to assist the tracking of workouts within the StrongLift weight-lifting program. Features progress tracking within each workout, and saves data for viewing progress in weights over time. 
+
