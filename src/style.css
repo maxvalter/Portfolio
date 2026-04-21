@@ -79,6 +79,44 @@ body {
   margin-top: 0;
 }
 
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.35rem;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  background: #ffffffb8;
+  transition: transform 180ms ease, color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+  color: var(--accent);
+  border-color: var(--line);
+  background: #ffffff;
+}
+
+.social-link:focus-visible {
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+
+.social-link svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: currentColor;
+}
+
 .nav-link {
   position: relative;
   display: inline-flex;
@@ -180,15 +218,54 @@ body {
 }
 
 .experience-grid {
+  --timeline-x: 7.1rem;
+  --timeline-gap: 1.5rem;
   display: grid;
-  gap: 0.95rem;
+  gap: 1rem;
+  position: relative;
+  padding-left: calc(var(--timeline-x) + var(--timeline-gap));
+}
+
+.experience-grid::before {
+  content: "";
+  position: absolute;
+  left: var(--timeline-x);
+  top: 0.55rem;
+  bottom: 0.55rem;
+  width: 2px;
+  background: linear-gradient(180deg, #c5d5f5 0%, #d7e2f8 100%);
+  border-radius: 99px;
 }
 
 .experience-card {
+  position: relative;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 1rem;
+}
+
+.experience-card::before {
+  content: "";
+  position: absolute;
+  left: calc((var(--timeline-gap) * -1) - 0.4rem);
+  top: 1.15rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 999px;
+  background: #6f8fcd;
+  border: 2px solid #eef4ff;
+  box-shadow: 0 0 0 2px #c9d8f6;
+}
+
+.experience-time {
+  position: absolute;
+  top: 0.95rem;
+  left: calc((var(--timeline-gap) * -1) - 1.15rem);
+  transform: translateX(-100%);
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .experience-meta {
@@ -280,5 +357,15 @@ body {
 
   .profile-collage {
     width: min(210px, 58vw);
+  }
+
+  .experience-grid {
+    padding-left: 0;
+  }
+
+  .experience-grid::before,
+  .experience-card::before,
+  .experience-time {
+    display: none;
   }
 }
