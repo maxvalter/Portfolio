@@ -1,3 +1,8 @@
+import atrRaw from "../content/atr.txt?raw";
+import recordfreakRaw from "../content/recordfreak.txt?raw";
+import strongliftRaw from "../content/stronglift.txt?raw";
+import thesisWorkRaw from "../content/thesis-work.txt?raw";
+
 export type Project = {
   title: string;
   category: string;
@@ -7,6 +12,8 @@ export type Project = {
   teaser: string;
 };
 
+const clean = (value: string) => value.trim();
+
 export const projects: Project[] = [
   {
     title: "Thesis Work",
@@ -14,8 +21,7 @@ export const projects: Project[] = [
     timeframe: "12 weeks",
     year: "2024",
     tags: ["academic", "ux", "service design"],
-    teaser:
-      "Research-driven thesis work from discovery to concept, with a focus on first-use confidence.",
+    teaser: clean(thesisWorkRaw),
   },
   {
     title: "Bike Shop WordPress Site",
@@ -23,8 +29,7 @@ export const projects: Project[] = [
     timeframe: "6 weeks",
     year: "2023",
     tags: ["client work", "wordpress", "frontend"],
-    teaser:
-      "A practical service website for a local bike shop, designed for clarity and easy updates.",
+    teaser: clean(atrRaw),
   },
   {
     title: "Stronglift Assistant",
@@ -32,8 +37,7 @@ export const projects: Project[] = [
     timeframe: "Ongoing",
     year: "2023",
     tags: ["side project", "fitness", "personal growth"],
-    teaser:
-      "A training assistant to keep gym sessions focused and progression visible before and after workouts.",
+    teaser: clean(strongliftRaw),
   },
   {
     title: "Recordfreak",
@@ -41,7 +45,6 @@ export const projects: Project[] = [
     timeframe: "WIP",
     year: "WIP",
     tags: ["side project", "entertainment", "api"],
-    teaser:
-      "A playful API experiment exploring listening patterns and music identity snapshots.",
+    teaser: clean(recordfreakRaw),
   },
 ];
