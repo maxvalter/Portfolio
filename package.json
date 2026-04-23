@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.33.1",
     "typescript": "6.0.3",
-    "vite": "8.0.9"
+    "vite": "8.0.9",
+    "wrangler": "^4.84.1"
   }
 }
