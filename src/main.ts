@@ -1,6 +1,6 @@
 import "./style.css";
 import { aboutParagraphs, experienceItems, profile } from "./content";
-import profileImage from "../content/img/profile.png";
+import profileImage from "../content/img/maxproffsigt.jpg";
 import { projects } from "./projects";
 
 const app = document.querySelector<HTMLDivElement>("#app");
@@ -13,6 +13,18 @@ const monthYear = new Intl.DateTimeFormat("en", {
   month: "short",
   year: "numeric",
 });
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+const projectListTagsMarkup = (tags: string[]) =>
+  tags.length === 0
+    ? ""
+    : `<span class="project-list-tags">${escapeHtml(tags.join(" · "))}</span>`;
 
 const getTimelineSortValue = (item: (typeof experienceItems)[number]) => {
   if (!item.time.end) {
@@ -84,8 +96,11 @@ const projectList = projects
           data-project-item="${project.slug}"
           class="project-list-link ${index === 0 ? "active" : ""}"
         >
-          <span class="project-list-title">${project.shortTitle}</span>
-          <span class="project-list-year">${project.year}</span>
+          <span class="project-list-text">
+            <span class="project-list-title">${escapeHtml(project.shortTitle)}</span>
+            ${projectListTagsMarkup(project.tags)}
+          </span>
+          <span class="project-list-year">${escapeHtml(project.year)}</span>
         </a>
       </li>
     `,
@@ -105,46 +120,47 @@ const renderHome = () => {
 
   app.innerHTML = `
     <main class="layout">
-      <aside class="left-rail">
-        <div class="left-inner">
-          <div>
-            <h1 class="name">${profile.name}</h1>
-            <p class="title">${profile.title}</p>
-            <p class="tagline">${profile.tagline}</p>
-          </div>
+      <header class="site-header">
+        <figure class="profile-collage" aria-label="Profile photo">
+          <span class="collage-layer collage-layer-soft"></span>
+          <img src="${profileImage}" alt="${profile.name}" class="profile-image" />
+        </figure>
 
+        <div class="site-intro">
+          <h1 class="name">${profile.name}</h1>
+          <p class="title">${profile.title}</p>
+          <p class="tagline">${profile.tagline}</p>
+        </div>
+
+        <div class="section-nav-wrap">
           <nav class="section-nav" aria-label="Page sections">
             <a href="#about" class="nav-link active" data-section-link="about">About</a>
             <a href="#experience" class="nav-link" data-section-link="experience">Experience</a>
             <a href="#projects" class="nav-link" data-section-link="projects">Projects</a>
           </nav>
-
-          <div class="social-links" aria-label="Social links">
-            <a href="https://www.linkedin.com/in/max-adolfsson-677297195/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.84v1.7h.06c.53-1 1.83-2.06 3.76-2.06C21.2 8.64 23 10.58 23 14.2V21h-4v-6.02c0-1.43-.02-3.27-1.99-3.27-1.99 0-2.3 1.55-2.3 3.16V21h-4V9Z" />
-              </svg>
-            </a>
-            <a href="https://github.com/maxvalter" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M12 .5C5.65.5.5 5.67.5 12.04c0 5.1 3.3 9.42 7.87 10.95.58.11.79-.25.79-.56v-2.15c-3.2.7-3.88-1.55-3.88-1.55-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.19 1.75 1.19 1.02 1.76 2.68 1.25 3.34.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.3-.51-1.47.11-3.07 0 0 .96-.31 3.14 1.19a10.9 10.9 0 0 1 5.72 0c2.18-1.5 3.13-1.2 3.13-1.2.63 1.61.24 2.78.12 3.08.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.41.35.78 1.03.78 2.08v3.08c0 .31.21.68.8.56a11.55 11.55 0 0 0 7.86-10.95C23.5 5.67 18.35.5 12 .5Z" />
-              </svg>
-            </a>
-            <a href="https://www.instagram.com/maxadolphsson/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.9A3.85 3.85 0 0 0 3.9 7.75v8.5a3.85 3.85 0 0 0 3.85 3.85h8.5a3.85 3.85 0 0 0 3.85-3.85v-8.5a3.85 3.85 0 0 0-3.85-3.85h-8.5Zm8.95 1.45a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.9a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2Z" />
-              </svg>
-            </a>
-          </div>
         </div>
-      </aside>
+
+        <div class="social-links" aria-label="Social links">
+          <a href="https://www.linkedin.com/in/max-adolfsson-677297195/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.84v1.7h.06c.53-1 1.83-2.06 3.76-2.06C21.2 8.64 23 10.58 23 14.2V21h-4v-6.02c0-1.43-.02-3.27-1.99-3.27-1.99 0-2.3 1.55-2.3 3.16V21h-4V9Z" />
+            </svg>
+          </a>
+          <a href="https://github.com/maxvalter" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 .5C5.65.5.5 5.67.5 12.04c0 5.1 3.3 9.42 7.87 10.95.58.11.79-.25.79-.56v-2.15c-3.2.7-3.88-1.55-3.88-1.55-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.19 1.75 1.19 1.02 1.76 2.68 1.25 3.34.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.3-.51-1.47.11-3.07 0 0 .96-.31 3.14 1.19a10.9 10.9 0 0 1 5.72 0c2.18-1.5 3.13-1.2 3.13-1.2.63 1.61.24 2.78.12 3.08.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.41.35.78 1.03.78 2.08v3.08c0 .31.21.68.8.56a11.55 11.55 0 0 0 7.86-10.95C23.5 5.67 18.35.5 12 .5Z" />
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/maxadolphsson/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.9A3.85 3.85 0 0 0 3.9 7.75v8.5a3.85 3.85 0 0 0 3.85 3.85h8.5a3.85 3.85 0 0 0 3.85-3.85v-8.5a3.85 3.85 0 0 0-3.85-3.85h-8.5Zm8.95 1.45a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.9a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2Z" />
+            </svg>
+          </a>
+        </div>
+      </header>
 
       <section class="content" aria-label="Portfolio content">
         <section id="about" class="content-section" data-section="about">
-          <figure class="profile-collage" aria-label="Profile image collage">
-            <span class="collage-layer collage-layer-soft"></span>
-            <img src="${profileImage}" alt="${profile.name}" class="profile-image" />
-          </figure>
           <h2>About</h2>
           <div class="about-copy">${aboutMarkup}</div>
         </section>
@@ -365,42 +381,30 @@ const setupCustomCursor = () => {
   document.body.appendChild(cursor);
   document.body.classList.add("has-custom-cursor");
 
-  let targetX = window.innerWidth * 0.5;
-  let targetY = window.innerHeight * 0.5;
-  let currentX = targetX;
-  let currentY = targetY;
-  let targetScale = 1;
-  let currentScale = 1;
+  const cursorSize = 28;
+  const cursorOffset = cursorSize / 2;
+  let pointerX = window.innerWidth * 0.5;
+  let pointerY = window.innerHeight * 0.5;
   let isPressed = false;
   let isHoveringInteractive = false;
   let isScrolling = false;
   let scrollTimeout = 0;
 
-  const updateScaleTarget = () => {
+  const updateCursorPosition = () => {
+    let scale = 1;
+
     if (isPressed) {
-      targetScale = 0.78;
-      return;
+      scale = 0.85;
+    } else if (isHoveringInteractive) {
+      scale = 1.15;
+    } else if (isScrolling) {
+      scale = 1.05;
     }
 
-    if (isHoveringInteractive) {
-      targetScale = 1.24;
-      return;
-    }
-
-    targetScale = isScrolling ? 1.1 : 1;
+    cursor.style.transform = `translate3d(${pointerX - cursorOffset}px, ${pointerY - cursorOffset}px, 0) scale(${scale})`;
   };
 
-  const animateCursor = () => {
-    currentX += (targetX - currentX) * 0.16;
-    currentY += (targetY - currentY) * 0.16;
-    currentScale += (targetScale - currentScale) * 0.18;
-
-    cursor.style.transform = `translate3d(${currentX - 22}px, ${currentY - 22}px, 0) scale(${currentScale})`;
-
-    requestAnimationFrame(animateCursor);
-  };
-
-  requestAnimationFrame(animateCursor);
+  updateCursorPosition();
 
   const updateInteractiveState = (eventTarget: EventTarget | null) => {
     const element = eventTarget instanceof Element ? eventTarget : null;
@@ -412,12 +416,12 @@ const setupCustomCursor = () => {
     );
 
     cursor.classList.toggle("is-hovering", isHoveringInteractive);
-    updateScaleTarget();
+    updateCursorPosition();
   };
 
   document.addEventListener("pointermove", (event) => {
-    targetX = event.clientX;
-    targetY = event.clientY;
+    pointerX = event.clientX;
+    pointerY = event.clientY;
     cursor.classList.add("is-visible");
     updateInteractiveState(event.target);
   });
@@ -425,13 +429,13 @@ const setupCustomCursor = () => {
   document.addEventListener("pointerdown", () => {
     isPressed = true;
     cursor.classList.add("is-pressed");
-    updateScaleTarget();
+    updateCursorPosition();
   });
 
   document.addEventListener("pointerup", () => {
     isPressed = false;
     cursor.classList.remove("is-pressed");
-    updateScaleTarget();
+    updateCursorPosition();
   });
 
   document.addEventListener("pointerleave", () => {
@@ -443,13 +447,13 @@ const setupCustomCursor = () => {
     () => {
       isScrolling = true;
       cursor.classList.add("is-scrolling");
-      updateScaleTarget();
+      updateCursorPosition();
 
       window.clearTimeout(scrollTimeout);
       scrollTimeout = window.setTimeout(() => {
         isScrolling = false;
         cursor.classList.remove("is-scrolling");
-        updateScaleTarget();
+        updateCursorPosition();
       }, 150);
     },
     { passive: true },
