@@ -21,10 +21,50 @@ const escapeHtml = (value: string) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-const projectListTagsMarkup = (tags: string[]) =>
-  tags.length === 0
-    ? ""
-    : `<span class="project-list-tags">${escapeHtml(tags.join(" · "))}</span>`;
+const formatTagsPiped = (tags: string[]) => tags.map(escapeHtml).join(" | ");
+
+const renderParagraphs = (value: string) =>
+  value
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+    .join("");
+
+const renderProjectHeroMedia = (project: (typeof projects)[number]) => {
+  const images =
+    project.heroImages?.length
+      ? project.heroImages
+      : project.heroImage
+        ? [project.heroImage]
+        : [];
+
+  if (images.length === 0) {
+    return `<div class="project-page-hero-placeholder" aria-hidden="true"></div>`;
+  }
+
+  const isGallery = images.length > 1;
+  const mediaClass = isGallery
+    ? `project-page-hero-media project-page-hero-media--gallery project-page-hero-media--${escapeHtml(project.slug)}`
+    : `project-page-hero-media project-page-hero-media--${escapeHtml(project.slug)}`;
+
+  return `
+    <figure class="${mediaClass}" aria-label="${escapeHtml(project.title)}">
+      ${
+        isGallery
+          ? images
+              .map(
+                (src) => `
+                  <div class="project-page-hero-gallery-pane">
+                    <img src="${src}" alt="" class="project-page-hero-img project-page-hero-img--gallery" loading="lazy" />
+                  </div>`,
+              )
+              .join("")
+          : `<img src="${images[0]}" alt="" class="project-page-hero-img" loading="lazy" />`
+      }
+    </figure>
+  `;
+};
 
 const getTimelineSortValue = (item: (typeof experienceItems)[number]) => {
   if (!item.time.end) {
@@ -46,30 +86,15 @@ const experienceCards = sortedExperienceItems
           <span>${item.company}</span>
         </div>
         <h3>${item.role}</h3>
-        <p>${item.description}</p>
         <details class="experience-details">
-          <summary aria-controls="experience-details-${index}">
-            Read more
+          <summary aria-controls="experience-details-${index}" aria-label="Toggle experience details">
+            <svg class="experience-details-toggle" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+              <path d="M5 7.5L10 12.5L15 7.5" />
+            </svg>
           </summary>
           <div id="experience-details-${index}" class="experience-details-content">
+            <p>${item.description}</p>
             ${item.details ? `<p>${item.details}</p>` : ""}
-            ${
-              item.images?.length
-                ? `
-              <div class="experience-media">
-                ${item.images
-                  .map(
-                    (image) => `
-                      <figure class="experience-media-item">
-                        <img src="${image.src}" alt="${image.alt}" loading="lazy" />
-                      </figure>
-                    `,
-                  )
-                  .join("")}
-              </div>
-            `
-                : ""
-            }
           </div>
         </details>
       </article>
@@ -87,22 +112,25 @@ const setActiveSection = (sectionId: string, navLinks: HTMLAnchorElement[]) => {
   });
 };
 
-const projectList = projects
+const projectCards = projects
   .map(
-    (project, index) => `
-      <li class="project-list-item">
-        <a
-          href="#project/${project.slug}"
-          data-project-item="${project.slug}"
-          class="project-list-link ${index === 0 ? "active" : ""}"
-        >
-          <span class="project-list-text">
-            <span class="project-list-title">${escapeHtml(project.shortTitle)}</span>
-            ${projectListTagsMarkup(project.tags)}
-          </span>
-          <span class="project-list-year">${escapeHtml(project.year)}</span>
-        </a>
-      </li>
+    (project) => `
+      <a href="#project/${project.slug}" class="project-card project-card--${escapeHtml(project.slug)}">
+        <figure class="project-card-thumb" aria-hidden="true">
+          ${project.previewImage
+            ? `<img src="${project.previewImage}" alt="" class="project-card-img" loading="lazy" />`
+            : `<div class="project-card-img-placeholder"></div>`
+          }
+        </figure>
+        <div class="project-card-body">
+          <div class="project-card-meta">
+            <span class="project-card-year">${escapeHtml(project.year)}</span>
+          </div>
+          <h3 class="project-card-title">${escapeHtml(project.title)}</h3>
+          <p class="project-card-desc">${escapeHtml(project.overview)}</p>
+          ${project.tags.length > 0 ? `<p class="project-card-tags-line">${formatTagsPiped(project.tags)}</p>` : ""}
+        </div>
+      </a>
     `,
   )
   .join("");
@@ -113,56 +141,49 @@ const getProjectHashSlug = () => {
 };
 
 const renderHome = () => {
-  const initialProject = projects[0];
-  if (!initialProject) {
-    throw new Error("Missing projects");
-  }
-
   app.innerHTML = `
-    <main class="layout">
-      <header class="site-header">
-        <figure class="profile-collage" aria-label="Profile photo">
-          <span class="collage-layer collage-layer-soft"></span>
-          <img src="${profileImage}" alt="${profile.name}" class="profile-image" />
-        </figure>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-inner">
+          <div class="sidebar-top">
+            <h1 class="name">${profile.name}</h1>
+            <p class="title">${profile.title}</p>
+            <p class="tagline">${profile.tagline}</p>
+          </div>
 
-        <div class="site-intro">
-          <h1 class="name">${profile.name}</h1>
-          <p class="title">${profile.title}</p>
-          <p class="tagline">${profile.tagline}</p>
-        </div>
-
-        <div class="section-nav-wrap">
           <nav class="section-nav" aria-label="Page sections">
-            <a href="#about" class="nav-link active" data-section-link="about">About</a>
+            <a href="#projects" class="nav-link active" data-section-link="projects">Projects</a>
             <a href="#experience" class="nav-link" data-section-link="experience">Experience</a>
-            <a href="#projects" class="nav-link" data-section-link="projects">Projects</a>
+            <a href="#about" class="nav-link" data-section-link="about">About</a>
           </nav>
-        </div>
 
-        <div class="social-links" aria-label="Social links">
-          <a href="https://www.linkedin.com/in/max-adolfsson-677297195/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.84v1.7h.06c.53-1 1.83-2.06 3.76-2.06C21.2 8.64 23 10.58 23 14.2V21h-4v-6.02c0-1.43-.02-3.27-1.99-3.27-1.99 0-2.3 1.55-2.3 3.16V21h-4V9Z" />
-            </svg>
-          </a>
-          <a href="https://github.com/maxvalter" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M12 .5C5.65.5.5 5.67.5 12.04c0 5.1 3.3 9.42 7.87 10.95.58.11.79-.25.79-.56v-2.15c-3.2.7-3.88-1.55-3.88-1.55-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.19 1.75 1.19 1.02 1.76 2.68 1.25 3.34.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.3-.51-1.47.11-3.07 0 0 .96-.31 3.14 1.19a10.9 10.9 0 0 1 5.72 0c2.18-1.5 3.13-1.2 3.13-1.2.63 1.61.24 2.78.12 3.08.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.41.35.78 1.03.78 2.08v3.08c0 .31.21.68.8.56a11.55 11.55 0 0 0 7.86-10.95C23.5 5.67 18.35.5 12 .5Z" />
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/maxadolphsson/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.9A3.85 3.85 0 0 0 3.9 7.75v8.5a3.85 3.85 0 0 0 3.85 3.85h8.5a3.85 3.85 0 0 0 3.85-3.85v-8.5a3.85 3.85 0 0 0-3.85-3.85h-8.5Zm8.95 1.45a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.9a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2Z" />
-            </svg>
-          </a>
+          <div class="social-links" aria-label="Social links">
+            <a href="https://www.linkedin.com/in/max-adolfsson-677297195/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.84v1.7h.06c.53-1 1.83-2.06 3.76-2.06C21.2 8.64 23 10.58 23 14.2V21h-4v-6.02c0-1.43-.02-3.27-1.99-3.27-1.99 0-2.3 1.55-2.3 3.16V21h-4V9Z" />
+              </svg>
+            </a>
+            <a href="https://github.com/maxvalter" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 .5C5.65.5.5 5.67.5 12.04c0 5.1 3.3 9.42 7.87 10.95.58.11.79-.25.79-.56v-2.15c-3.2.7-3.88-1.55-3.88-1.55-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.19 1.75 1.19 1.02 1.76 2.68 1.25 3.34.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.3-.51-1.47.11-3.07 0 0 .96-.31 3.14 1.19a10.9 10.9 0 0 1 5.72 0c2.18-1.5 3.13-1.2 3.13-1.2.63 1.61.24 2.78.12 3.08.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.41.35.78 1.03.78 2.08v3.08c0 .31.21.68.8.56a11.55 11.55 0 0 0 7.86-10.95C23.5 5.67 18.35.5 12 .5Z" />
+              </svg>
+            </a>
+            <a href="mailto:maxvadolfsson@gmail.com" class="social-link" aria-label="Email">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.75" y="5" width="18.5" height="14" rx="1.5" fill="none" />
+                <path d="M3.5 6.5 L12 12.5 L20.5 6.5" fill="none" />
+              </svg>
+            </a>
+          </div>
         </div>
-      </header>
+      </aside>
 
-      <section class="content" aria-label="Portfolio content">
-        <section id="about" class="content-section" data-section="about">
-          <h2>About</h2>
-          <div class="about-copy">${aboutMarkup}</div>
+      <main class="content-area" aria-label="Portfolio content">
+        <section id="projects" class="content-section" data-section="projects">
+          <h2>Projects</h2>
+          <div class="project-cards-list">
+            ${projectCards}
+          </div>
         </section>
 
         <section id="experience" class="content-section" data-section="experience">
@@ -172,32 +193,19 @@ const renderHome = () => {
           </div>
         </section>
 
-        <section id="projects" class="content-section" data-section="projects">
-          <h2>Projects</h2>
-          <div class="projects-showcase">
-            <a href="#project/${initialProject.slug}" class="project-preview-card active" data-project-card>
-              <figure class="project-preview-image-wrap">
-                ${
-                  initialProject.heroImage
-                    ? `<img src="${initialProject.heroImage}" alt="${initialProject.title}" class="project-preview-image" />`
-                    : `<div class="project-image-placeholder" aria-hidden="true"></div>`
-                }
-              </figure>
-              <div class="project-preview-content">
-                <h3>${initialProject.title}</h3>
-                <p>${initialProject.overview}</p>
-              </div>
-            </a>
-            <div class="project-list-column">
-              <ul class="project-list">
-                ${projectList}
-              </ul>
-              <p class="project-list-hint">Hover to preview. Click to open full case page.</p>
+        <section id="about" class="content-section" data-section="about">
+          <h2>About</h2>
+          <div class="about-card">
+            <figure class="about-card-figure" aria-label="Profile photo">
+              <img src="${profileImage}" alt="${profile.name}" class="profile-image" />
+            </figure>
+            <div class="about-card-body">
+              <div class="about-copy">${aboutMarkup}</div>
             </div>
           </div>
         </section>
-      </section>
-    </main>
+      </main>
+    </div>
   `;
 };
 
@@ -208,53 +216,67 @@ const renderProjectDetail = (slug: string) => {
     return;
   }
 
-  const relatedProjects = projects.filter((item) => item.slug !== project.slug).slice(0, 2);
+  const currentIndex = projects.findIndex((item) => item.slug === slug);
+  const prevProject = currentIndex > 0 ? projects[currentIndex - 1] : null;
+  const nextProject = currentIndex < projects.length - 1 ? projects[currentIndex + 1] : null;
 
   app.innerHTML = `
-    <main class="project-page">
-      <a href="#projects" class="project-back-link">Back to projects</a>
+    <main class="project-page project-page--${escapeHtml(project.slug)}">
+      <a href="#projects" class="project-back-link">← Back to projects</a>
 
-      <section class="project-page-header">
-        <p>${project.category} • ${project.year} • ${project.timeframe}</p>
-        <h1>${project.title}</h1>
-        <p class="project-page-overview">${project.overview}</p>
-        <div class="tag-list">
-          ${project.tags.map((tag) => `<span>${tag}</span>`).join("")}
+      <header class="project-page-hero">
+        <div class="project-page-hero-content">
+          <h1 class="project-page-title">${escapeHtml(project.title)}</h1>
+          <div class="project-page-meta-group">
+            <span class="project-page-year">${escapeHtml(project.year)}</span>
+            <span class="project-page-sep" aria-hidden="true">·</span>
+            <span class="project-page-timeframe">${escapeHtml(project.timeframe)}</span>
+          </div>
+          ${project.tags.length > 0 ? `<p class="project-page-tags">${formatTagsPiped(project.tags)}</p>` : ""}
+          <p class="project-page-overview">${escapeHtml(project.overview)}</p>
         </div>
-      </section>
+        ${renderProjectHeroMedia(project)}
+      </header>
 
-      ${
-        project.heroImage
-          ? `<img src="${project.heroImage}" alt="${project.title} hero" class="project-page-hero" />`
-          : `<div class="project-page-hero placeholder" aria-hidden="true"></div>`
-      }
+      <div class="project-page-body">
+        <section class="project-page-sections">
+          <article class="project-page-section project-page-section--media-right">
+            <div class="project-page-section-text">
+              <h2 class="project-page-section-label">Background</h2>
+              ${renderParagraphs(project.background)}
+            </div>
+            ${project.backgroundImage
+              ? `<figure class="project-page-section-media" aria-hidden="true">
+                   <img src="${project.backgroundImage}" alt="" loading="lazy" />
+                 </figure>`
+              : ""
+            }
+          </article>
+          <article class="project-page-section project-page-section--solution project-page-section--media-left">
+            <div class="project-page-section-text">
+              <h2 class="project-page-section-label">Solution</h2>
+              ${renderParagraphs(project.solution)}
+            </div>
+            ${project.solutionImage
+              ? `<figure class="project-page-section-media" aria-hidden="true">
+                   <img src="${project.solutionImage}" alt="" loading="lazy" />
+                 </figure>`
+              : ""
+            }
+          </article>
+        </section>
+      </div>
 
-      <section class="project-page-details">
-        <article class="project-page-detail-card">
-          <h2>Teaser</h2>
-          <p>${project.teaser}</p>
-        </article>
-        <article class="project-page-detail-card">
-          <h2>Case Story</h2>
-          <p>${project.longdesc}</p>
-        </article>
-      </section>
-
-      <section class="project-page-related">
-        <h2>More Projects</h2>
-        <div class="project-related-grid">
-          ${relatedProjects
-            .map(
-              (item) => `
-                <a href="#project/${item.slug}" class="project-related-link">
-                  <h3>${item.title}</h3>
-                  <p>${item.teaser}</p>
-                </a>
-              `,
-            )
-            .join("")}
-        </div>
-      </section>
+      <nav class="project-page-sibling-nav" aria-label="Project navigation">
+        ${prevProject
+          ? `<a href="#project/${prevProject.slug}" class="project-sibling-link">← Previous Project</a>`
+          : `<span></span>`
+        }
+        ${nextProject
+          ? `<a href="#project/${nextProject.slug}" class="project-sibling-link project-sibling-link--next">Next Project →</a>`
+          : `<span></span>`
+        }
+      </nav>
     </main>
   `;
 };
@@ -304,46 +326,6 @@ const setupHomeInteractions = () => {
     });
   });
 
-  const previewCard = document.querySelector<HTMLAnchorElement>("[data-project-card]");
-  const projectItems = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-project-item]"));
-
-  if (!previewCard || projectItems.length === 0) {
-    return;
-  }
-
-  const setActiveProject = (slug: string) => {
-    const project = projects.find((item) => item.slug === slug);
-    if (!project) {
-      return;
-    }
-
-    projectItems.forEach((item) => item.classList.toggle("active", item.dataset.projectItem === slug));
-    previewCard.classList.add("active");
-    previewCard.setAttribute("href", `#project/${project.slug}`);
-    previewCard.innerHTML = `
-      <figure class="project-preview-image-wrap">
-        ${
-          project.heroImage
-            ? `<img src="${project.heroImage}" alt="${project.title}" class="project-preview-image" />`
-            : `<div class="project-image-placeholder" aria-hidden="true"></div>`
-        }
-      </figure>
-      <div class="project-preview-content">
-        <h3>${project.title}</h3>
-        <p>${project.overview}</p>
-      </div>
-    `;
-  };
-
-  projectItems.forEach((item) => {
-    const slug = item.dataset.projectItem;
-    if (!slug) {
-      return;
-    }
-
-    item.addEventListener("mouseenter", () => setActiveProject(slug));
-    item.addEventListener("focus", () => setActiveProject(slug));
-  });
 };
 
 const renderApp = () => {
@@ -376,7 +358,8 @@ const setupCustomCursor = () => {
 
   const cursor = document.createElement("div");
   cursor.className = "custom-cursor";
-  cursor.innerHTML = '<span class="custom-cursor-dot" aria-hidden="true"></span>';
+  cursor.innerHTML =
+    '<span class="custom-cursor-inner"><span class="custom-cursor-dot" aria-hidden="true"></span></span>';
 
   document.body.appendChild(cursor);
   document.body.classList.add("has-custom-cursor");
@@ -387,19 +370,10 @@ const setupCustomCursor = () => {
   let pointerY = window.innerHeight * 0.5;
   let isPressed = false;
   let isHoveringInteractive = false;
-  let isScrolling = false;
   let scrollTimeout = 0;
 
   const updateCursorPosition = () => {
-    let scale = 1;
-
-    if (isPressed) {
-      scale = 0.85;
-    } else if (isHoveringInteractive) {
-      scale = 1.15;
-    } else if (isScrolling) {
-      scale = 1.05;
-    }
+    const scale = isPressed ? 0.85 : 1;
 
     cursor.style.transform = `translate3d(${pointerX - cursorOffset}px, ${pointerY - cursorOffset}px, 0) scale(${scale})`;
   };
@@ -445,15 +419,11 @@ const setupCustomCursor = () => {
   document.addEventListener(
     "scroll",
     () => {
-      isScrolling = true;
       cursor.classList.add("is-scrolling");
-      updateCursorPosition();
 
       window.clearTimeout(scrollTimeout);
       scrollTimeout = window.setTimeout(() => {
-        isScrolling = false;
         cursor.classList.remove("is-scrolling");
-        updateCursorPosition();
       }, 150);
     },
     { passive: true },

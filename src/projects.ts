@@ -7,15 +7,17 @@ export type Project = {
   slug: string;
   title: string;
   shortTitle: string;
-  category: string;
   timeframe: string;
   year: string;
   tags: string[];
-  teaser: string;
   overview: string;
-  longdesc: string;
+  background: string;
+  solution: string;
   heroImage: string | null;
+  heroImages?: string[];
   previewImage: string | null;
+  backgroundImage?: string;
+  solutionImage?: string;
 };
 
 /** Optional overrides per slug: `content/projects/<slug>/project.json` */
@@ -87,78 +89,82 @@ const baseProjects: Project[] = [
     slug: "thesis-work",
     title: "Thesis Work",
     shortTitle: "Thesis Work",
-    category: "Research + Product Design",
     timeframe: "12 weeks",
     year: "2025",
-    tags: ["Agentic AI", "AI Development", "UX"],
-    teaser: clean(thesisWorkRaw),
+    tags: ["Research + Product Design", "Agentic AI", "LangChain", "UX"],
     overview:
       "An agentic chatbot for the Flowpass platform, built with LangChain and custom tools to answer users based on their own environment data.",
-    heroImage: new URL("./img/chatstream.gif", import.meta.url).href,
-    previewImage: new URL("./img/chatstream.gif", import.meta.url).href,
-    longdesc: "An agentic chatbot for the Flowpass platform, using the LangChain framework to call custom tools making API-calls to the backend, and delivering answers on prompts regarding the user's platform environment."
+    background: clean(thesisWorkRaw),
+    heroImage: new URL("./img/mockups/thesis/chatUI.png", import.meta.url).href,
+    previewImage: new URL("./img/mockups/thesis/chatUI.png", import.meta.url).href,
+    solutionImage: new URL("./img/mockups/thesis/chatstream.gif", import.meta.url).href,
+    solution:
+      "An agentic chatbot for the Flowpass platform, using the LangChain framework to call custom tools making API-calls to the backend, and delivering answers on prompts regarding the user's platform environment.",
   },
   {
     slug: "flowpass-mobile-redesign",
-    title: "Mobile app redesigning + patching",
+    title: "Mobile app redesign",
     shortTitle: "Flowpass Mobile App",
-    category: "Research + Product Design",
-    timeframe: "4 weeks",
+    timeframe: "3 weeks",
     year: "2025",
-    tags: ["Agentic AI", "AI Development", "UX"],
-    teaser: clean(thesisWorkRaw),
+    tags: ["Mobile UX", "Social features", "React/Typescript"],
     overview:
       "A social experience redesign and UI patch cycle focused on reducing confusion and cleaning up edge-case presentation across the mobile app.",
-    heroImage: new URL("../content/img/flowpass/flowpass-screen.png", import.meta.url).href,
-    previewImage: new URL("../content/img/flowpass/Chatwindow.png", import.meta.url).href,
-    longdesc: "The initial tasks of my internship at Flowpass included a redesign of the social component, simplifying the users different views to reduce confusion and keep interactions effective. \n\n Too finish of this period, I patched design flaws in the mobile frontend, such as date presentation for opening hours, including special days."
+    background: "The community page of the Flowpass mobile app had no solution for clearly displaying both people in ones team and ones follow-list. This called for redesigning and rebuilding its frontend from scratch.",
+    heroImage: new URL("./img/mockups/internships/community.png", import.meta.url).href,
+    previewImage: new URL("./img/mockups/internships/community.png", import.meta.url).href,
+    solutionImage: new URL("./img/mockups/internships/alsogoing.png", import.meta.url).href,
+    solution:
+      "A display from profile images give a discreet indication of which co-workers are booked for different sessions. A drawer complements this view by providing detailed information on the bookers.",
   },
   {
     slug: "bike-shop-wordpress-site",
     title: "And-The-Revolution's Website",
     shortTitle: "ATR Website Maintenence",
-    category: "Web Design + WordPress",
     timeframe: "6 weeks",
     year: "2026",
-    tags: ["client work", "wordpress", "frontend"],
-    teaser: clean(atrRaw),
+    tags: ["Web Design + WordPress", "client work", "wordpress", "frontend"],
     overview:
       "Correcting flaws in design and functionality in a custom Wordpress environment",
-    heroImage: null,
-    previewImage: null,
-    longdesc: "Patched tailpress theme and plugins to unify the websites design system. Refurbished a buggy bikebuilder plugin, ensuring correct image generation and price calculation"
+    background: clean(atrRaw),
+    heroImage: new URL("./img/mockups/ATR/Cykelbyggaren.png", import.meta.url).href,
+    previewImage: new URL("./img/mockups/ATR/Cykelbyggaren.png", import.meta.url).href,
+    solution:
+      "Patched tailpress theme and plugins to unify the websites design system. Refurbished a buggy bikebuilder plugin, ensuring correct image generation and price calculation",
   },
   {
     slug: "stronglift-assistant",
-    title: "Stronglift Assistant",
+    title: "Stronglift 5x5 Tracker",
     shortTitle: "Stronglift",
-    category: "Side Project",
     timeframe: "Ongoing",
     year: "2026",
-    tags: ["side project", "fitness", "personal growth"],
-    teaser: clean(strongliftRaw),
+    tags: ["Side Project", "fitness", "personal growth"],
     overview:
       "A private workout companion for StrongLift 5x5 that keeps sessions focused and tracks progression over time with minimal friction.",
-    heroImage: new URL("../content/gif/2026-04-09 16.04.37.gif", import.meta.url).href,
-    previewImage: new URL("../content/gif/2026-04-09 16.04.37.gif", import.meta.url).href,
-    longdesc: "To track my progress within workouts and overtime fitness gains, an app is hosted for private use as mobile website. It is designed for the StrongLift 5x5 exercise program, keeps all numbers noted, and displays progress overtime for each exercise"
-  },
-  {
-    slug: "recordfreak",
-    title: "Recordfreak",
-    shortTitle: "Recordfreak",
-    category: "Spotify API Experiment",
-    timeframe: "3 weeks",
-    year: "2025",
-    tags: ["side project", "entertainment", "api"],
-    teaser: clean(recordfreakRaw),
-    overview:
-      "An experimental Spotify API app that presents your saved albums as a playful wall-like record collection interface.",
-    heroImage: null,
-    previewImage: null,
-    longdesc: "A web app built with Spotify Web API, presenting ones saved albums as a on the wall record collection. Provides an alternative interface for interacting with ones record collection."
-  },
+    background: clean(strongliftRaw),
+    heroImage: new URL("./img/mockups/strongliftHome.png", import.meta.url).href,
+    heroImages: [
+      new URL("./img/mockups/strongliftHome.png", import.meta.url).href,
+      new URL("./img/mockups/strongLiftMidWork1.png", import.meta.url).href,
+    ],
+    previewImage: new URL("./img/mockups/strongLiftMidWork1.png", import.meta.url).href,
+    backgroundImage: new URL("./img/mockups/historyWorkForm.png", import.meta.url).href,
+    solutionImage: new URL("./img/mockups/ChartStronglift.png", import.meta.url).href,
+    solution:
+      "An app is hosted for private use as mobile website. It keeps all numbers noted, and helps setting workout weights based on ones progress. One can also add a videos to the logs to review ones form. I displays progress in charts, overtime for each exercise. All phases, including hosting, are vibe coded in Cursor.",
+  }
 
 ];
 
-export const projects: Project[] = baseProjects.map(mergeProjectMeta);
+/** Highest 4-digit year in the label, for list order (newest first). */
+const sortYearValue = (year: string): number => {
+  const years = year.match(/\d{4}/g);
+  if (!years?.length) {
+    return 0;
+  }
+  return Math.max(...years.map(Number));
+};
+
+export const projects: Project[] = [...baseProjects.map(mergeProjectMeta)].sort(
+  (a, b) => sortYearValue(b.year) - sortYearValue(a.year),
+);
