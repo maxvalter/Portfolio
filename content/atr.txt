@@ -1,2 +1,1 @@
-For the bicycle store And-The-Revolution I have made cleaned up the wordpress site to use styling according to the design system, redesigned product pages to extend interaction, and given their bicycle builder a quick improvement in user experience.
-
+And-The-Revolution is a bicycle shop in central Stockholm, allowing customers to choose custom parts for when making a purchase. The webpage is built in Wordpress using Tailpress and a custom plugin called 'Bikebuilder'. This plugin, and the website overall, had long withstood problems with bugs and overall usability.

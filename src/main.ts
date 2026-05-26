@@ -23,12 +23,38 @@ const escapeHtml = (value: string) =>
 
 const formatTagsPiped = (tags: string[]) => tags.map(escapeHtml).join(" | ");
 
+/** Lines like `- item` or `* item` (one block = separated by a blank line). */
+const bulletLine = /^\s*[-*]\s+(.+)$/;
+
+const renderParagraphBlock = (block: string): string => {
+  const trimmed = block.trim();
+  const lines = trimmed
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (lines.length === 0) {
+    return "";
+  }
+  const allBullets = lines.every((line) => bulletLine.test(line));
+  if (allBullets) {
+    const items = lines
+      .map((line) => {
+        const match = line.match(bulletLine);
+        return match ? `<li>${escapeHtml(match[1])}</li>` : "";
+      })
+      .filter(Boolean)
+      .join("");
+    return `<ul>${items}</ul>`;
+  }
+  return `<p>${escapeHtml(trimmed)}</p>`;
+};
+
 const renderParagraphs = (value: string) =>
   value
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
-    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+    .map(renderParagraphBlock)
     .join("");
 
 const renderProjectHeroMedia = (project: (typeof projects)[number]) => {
@@ -80,24 +106,26 @@ const sortedExperienceItems = [...experienceItems].sort(
 const experienceCards = sortedExperienceItems
   .map(
     (item, index) => `
-      <article class="experience-card">
+      <div class="experience-entry">
         <span class="experience-time">${monthYear.format(item.time.start)} - ${item.time.end ? monthYear.format(item.time.end) : "Present"}</span>
-        <div class="experience-meta">
-          <span>${item.company}</span>
-        </div>
-        <h3>${item.role}</h3>
-        <details class="experience-details">
-          <summary aria-controls="experience-details-${index}" aria-label="Toggle experience details">
-            <svg class="experience-details-toggle" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-              <path d="M5 7.5L10 12.5L15 7.5" />
-            </svg>
-          </summary>
-          <div id="experience-details-${index}" class="experience-details-content">
-            <p>${item.description}</p>
-            ${item.details ? `<p>${item.details}</p>` : ""}
+        <article class="experience-card">
+          <div class="experience-meta">
+            <span>${item.company}</span>
           </div>
-        </details>
-      </article>
+          <h3>${item.role}</h3>
+          <details class="experience-details">
+            <summary aria-controls="experience-details-${index}" aria-label="Toggle experience details">
+              <svg class="experience-details-toggle" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                <path d="M5 7.5L10 12.5L15 7.5" />
+              </svg>
+            </summary>
+            <div id="experience-details-${index}" class="experience-details-content">
+              <p>${item.description}</p>
+              ${item.details ? `<p>${item.details}</p>` : ""}
+            </div>
+          </details>
+        </article>
+      </div>
     `,
   )
   .join("");
@@ -323,6 +351,20 @@ const setupHomeInteractions = () => {
       targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
       setActiveSection(targetId, navLinks);
       history.replaceState(null, "", `#${targetId}`);
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>(".experience-card").forEach((card) => {
+    card.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest("summary")) {
+        return;
+      }
+
+      const details = card.querySelector<HTMLDetailsElement>(".experience-details");
+      if (details) {
+        details.open = !details.open;
+      }
     });
   });
 

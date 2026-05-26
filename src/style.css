@@ -321,12 +321,17 @@ body.has-custom-cursor summary {
   border-radius: 99px;
 }
 
+.experience-entry {
+  position: relative;
+}
+
 .experience-card {
   position: relative;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 1rem 3rem 1rem 1rem;
+  cursor: pointer;
 }
 
 .experience-card::before {
@@ -389,6 +394,7 @@ body.has-custom-cursor summary {
   transition: background-color 180ms ease, color 180ms ease;
 }
 
+.experience-card:hover .experience-details summary,
 .experience-details summary:hover {
   color: var(--accent);
   background: #f2e7dc;
@@ -489,9 +495,17 @@ body.has-custom-cursor summary {
 }
 
 .project-card--bike-shop-wordpress-site .project-card-img {
-  object-fit: contain;
-  object-position: center;
-  transform: scale(1);
+  object-fit: cover;
+  object-position: 50% 28%;
+  transform: scale(1.12);
+  transform-origin: 50% 28%;
+}
+
+.project-card--thesis-work .project-card-img {
+  /* Tight crop on the top-right: GPT-4o Mini dropdown + user message bubble */
+  object-position: 100% 0;
+  transform: scale(3.6);
+  transform-origin: 100% 0;
 }
 
 .project-card:hover .project-card-img,
@@ -501,7 +515,12 @@ body.has-custom-cursor summary {
 
 .project-card--bike-shop-wordpress-site:hover .project-card-img,
 .project-card--bike-shop-wordpress-site:focus-visible .project-card-img {
-  transform: scale(1.04);
+  transform: scale(1.2);
+}
+
+.project-card--thesis-work:hover .project-card-img,
+.project-card--thesis-work:focus-visible .project-card-img {
+  transform: scale(3.75);
 }
 
 .project-card-body {
@@ -699,7 +718,10 @@ body.has-custom-cursor summary {
 }
 
 .project-page-hero-media--bike-shop-wordpress-site .project-page-hero-img {
-  object-fit: contain;
+  object-fit: cover;
+  object-position: 100% 50%;
+  transform: scale(1.1);
+  transform-origin: 100% 50%;
 }
 
 .project-page-hero-media--flowpass-mobile-redesign .project-page-hero-img {
@@ -813,6 +835,23 @@ body.has-custom-cursor summary {
   margin-top: 0.85rem;
 }
 
+.project-page-section ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--text-body);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.project-page-section li + li {
+  margin-top: 0.35rem;
+}
+
+.project-page-section p + ul,
+.project-page-section ul + p {
+  margin-top: 0.85rem;
+}
+
 .project-page-section-media {
   margin: 0;
   width: clamp(120px, 22vw, 170px);
@@ -900,9 +939,15 @@ body.has-custom-cursor summary {
   }
 
   .experience-grid::before,
-  .experience-card::before,
-  .experience-time {
+  .experience-card::before {
     display: none;
+  }
+
+  .experience-time {
+    position: static;
+    transform: none;
+    display: block;
+    margin: 0 0 0.4rem 0.15rem;
   }
 
   .project-page-hero {

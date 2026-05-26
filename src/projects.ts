@@ -93,19 +93,19 @@ const baseProjects: Project[] = [
     year: "2025",
     tags: ["Research + Product Design", "Agentic AI", "LangChain", "UX"],
     overview:
-      "An agentic chatbot for the Flowpass platform, built with LangChain and custom tools to answer users based on their own environment data.",
+      "An agentic chatbot for the Flowpass platform, built with LangGraph and custom tools to answer users based on their own environment data.",
     background: clean(thesisWorkRaw),
     heroImage: new URL("./img/mockups/thesis/chatUI.png", import.meta.url).href,
     previewImage: new URL("./img/mockups/thesis/chatUI.png", import.meta.url).href,
     solutionImage: new URL("./img/mockups/thesis/chatstream.gif", import.meta.url).href,
     solution:
-      "An agentic chatbot for the Flowpass platform, using the LangChain framework to call custom tools making API-calls to the backend, and delivering answers on prompts regarding the user's platform environment.",
+      "An agentic chatbot for the Flowpass platform, using the LangGraph framework to call custom tools making API-calls to the backend, and delivering answers on prompts regarding the user's platform environment. It was interatively improved by checking its accuracy and performance using LangFuse agent tracing.",
   },
   {
     slug: "flowpass-mobile-redesign",
     title: "Mobile app redesign",
     shortTitle: "Flowpass Mobile App",
-    timeframe: "3 weeks",
+    timeframe: "4 weeks",
     year: "2025",
     tags: ["Mobile UX", "Social features", "React/Typescript"],
     overview:
@@ -130,7 +130,12 @@ const baseProjects: Project[] = [
     heroImage: new URL("./img/mockups/ATR/Cykelbyggaren.png", import.meta.url).href,
     previewImage: new URL("./img/mockups/ATR/Cykelbyggaren.png", import.meta.url).href,
     solution:
-      "Patched tailpress theme and plugins to unify the websites design system. Refurbished a buggy bikebuilder plugin, ensuring correct image generation and price calculation",
+      `The website's custom PHP code, admin settings, and tailpress theme was examined to solve numerous issues:
+
+      - Repaired the Bike builder plugin (PHP) to make displayed images and price calculations behave correctly.
+      - Fixed the shopping cart to make it contain and display correct items. 
+      - Comprehensively unified typography and styling according to the websites design system.
+      - Fixed layout bugs on smaller screens `,
   },
   {
     slug: "stronglift-assistant",
@@ -151,7 +156,7 @@ const baseProjects: Project[] = [
     backgroundImage: new URL("./img/mockups/historyWorkForm.png", import.meta.url).href,
     solutionImage: new URL("./img/mockups/ChartStronglift.png", import.meta.url).href,
     solution:
-      "An app is hosted for private use as mobile website. It keeps all numbers noted, and helps setting workout weights based on ones progress. One can also add a videos to the logs to review ones form. I displays progress in charts, overtime for each exercise. All phases, including hosting, are vibe coded in Cursor.",
+      "An app is hosted for private use as a mobile website. It keeps all numbers noted in a database, and helps setting workout weights based on ones progress. One can also add a videos to the logs to review ones form. It displays progress in charts for each exercise. Almost entirely 'vibe coded' in Cursor :)",
   }
 
 ];
