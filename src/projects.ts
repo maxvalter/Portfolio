@@ -1,23 +1,12 @@
-import atrRaw from "../content/atr.txt?raw";
-import recordfreakRaw from "../content/recordfreak.txt?raw";
-import strongliftRaw from "../content/stronglift.txt?raw";
-import thesisWorkRaw from "../content/thesis-work.txt?raw";
-
 export type Project = {
   slug: string;
   title: string;
   shortTitle: string;
-  timeframe: string;
   year: string;
   tags: string[];
   overview: string;
-  background: string;
-  solution: string;
-  heroImage: string | null;
-  heroImages?: string[];
   previewImage: string | null;
-  backgroundImage?: string;
-  solutionImage?: string;
+  bodyHtml: string;
 };
 
 /** Optional overrides per slug: `content/projects/<slug>/project.json` */
@@ -32,9 +21,15 @@ const projectMetaModules = import.meta.glob("../content/projects/*/project.json"
   import: "default",
 }) as Record<string, unknown>;
 
-const slugFromMetaPath = (path: string): string | null => {
+const projectBodyModules = import.meta.glob("../content/projects/*/body.html", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+}) as Record<string, string>;
+
+const slugFromProjectPath = (path: string, file: string): string | null => {
   const normalized = path.replaceAll("\\", "/");
-  const match = normalized.match(/\/projects\/([^/]+)\/project\.json$/);
+  const match = normalized.match(new RegExp(`/projects/([^/]+)/${file}$`));
   return match?.[1] ?? null;
 };
 
@@ -59,7 +54,7 @@ const asMeta = (value: unknown): ProjectMetaJson | null => {
 const metaBySlug = new Map<string, ProjectMetaJson>();
 
 for (const [path, data] of Object.entries(projectMetaModules)) {
-  const slug = slugFromMetaPath(path);
+  const slug = slugFromProjectPath(path, "project.json");
   if (!slug) {
     continue;
   }
@@ -68,6 +63,80 @@ for (const [path, data] of Object.entries(projectMetaModules)) {
     metaBySlug.set(slug, meta);
   }
 }
+
+const bodyBySlug = new Map<string, string>();
+
+for (const [path, html] of Object.entries(projectBodyModules)) {
+  const slug = slugFromProjectPath(path, "body.html");
+  if (slug && typeof html === "string") {
+    bodyBySlug.set(slug, html.trim());
+  }
+}
+
+const applyPlaceholders = (html: string, assets: Record<string, string>) =>
+  html.replace(/\{\{(\w+)\}\}/g, (_, key: string) => assets[key] ?? "");
+
+const img = (path: string) => new URL(path, import.meta.url).href;
+
+/** Card metadata + asset placeholders per slug. Body markup lives in `content/projects/<slug>/body.html`. */
+const baseProjects: Array<Omit<Project, "bodyHtml"> & { assets?: Record<string, string> }> = [
+  {
+    slug: "thesis-work",
+    title: "Thesis Work",
+    shortTitle: "Thesis Work",
+    year: "2025",
+    tags: ["Research + Product Design", "Agentic AI", "LangChain", "UX"],
+    overview:
+      "An agentic chatbot for the Flowpass platform, built with LangGraph and custom tools to answer users based on their own environment data.",
+    previewImage: img("./img/mockups/thesis/chatUI.png"),
+    assets: {
+      heroImage: img("./img/mockups/thesis/chatUI.png"),
+      solutionImage: img("./img/mockups/thesis/chatstream.gif"),
+    },
+  },
+  {
+    slug: "flowpass-mobile-redesign",
+    title: "Mobile app redesign",
+    shortTitle: "Flowpass Mobile App",
+    year: "2025",
+    tags: ["Mobile UX", "Social features", "React/Typescript"],
+    overview:
+      "A social experience redesign and UI patch cycle focused on reducing confusion and cleaning up edge-case presentation across the mobile app.",
+    previewImage: img("./img/mockups/internships/community.png"),
+    assets: {
+      heroImage: img("./img/mockups/internships/community.png"),
+      solutionImage: img("./img/mockups/internships/alsogoing.png"),
+    },
+  },
+  {
+    slug: "bike-shop-wordpress-site",
+    title: "ATR's Website Cleanup",
+    shortTitle: "",
+    year: "2026",
+    tags: ["Web Design + WordPress", "client work", "wordpress", "frontend"],
+    overview: "Correcting flaws in design and functionality in a custom Wordpress environment",
+    previewImage: img("./img/mockups/ATR/Cykelbyggaren.png"),
+    assets: {
+      heroImage: img("./img/mockups/ATR/Cykelbyggaren.png"),
+    },
+  },
+  {
+    slug: "stronglift-assistant",
+    title: "Stronglift 5x5 Tracker",
+    shortTitle: "Stronglift",
+    year: "2026",
+    tags: ["Side Project", "fitness", "personal growth"],
+    overview:
+      "A private workout companion for StrongLift 5x5 that keeps sessions focused and tracks progression over time with minimal friction.",
+    previewImage: img("./img/mockups/strongLiftMidWork1.png"),
+    assets: {
+      heroImage1: img("./img/mockups/strongliftHome.png"),
+      heroImage2: img("./img/mockups/strongLiftMidWork1.png"),
+      backgroundImage: img("./img/mockups/historyWorkForm.png"),
+      solutionImage: img("./img/mockups/ChartStronglift.png"),
+    },
+  },
+];
 
 const mergeProjectMeta = (project: Project): Project => {
   const meta = metaBySlug.get(project.slug);
@@ -82,84 +151,19 @@ const mergeProjectMeta = (project: Project): Project => {
   };
 };
 
-const clean = (value: string) => value.trim();
-
-const baseProjects: Project[] = [
-  {
-    slug: "thesis-work",
-    title: "Thesis Work",
-    shortTitle: "Thesis Work",
-    timeframe: "12 weeks",
-    year: "2025",
-    tags: ["Research + Product Design", "Agentic AI", "LangChain", "UX"],
-    overview:
-      "An agentic chatbot for the Flowpass platform, built with LangGraph and custom tools to answer users based on their own environment data.",
-    background: clean(thesisWorkRaw),
-    heroImage: new URL("./img/mockups/thesis/chatUI.png", import.meta.url).href,
-    previewImage: new URL("./img/mockups/thesis/chatUI.png", import.meta.url).href,
-    solutionImage: new URL("./img/mockups/thesis/chatstream.gif", import.meta.url).href,
-    solution:
-      "An agentic chatbot for the Flowpass platform, using the LangGraph framework to call custom tools making API-calls to the backend, and delivering answers on prompts regarding the user's platform environment. It was interatively improved by checking its accuracy and performance using LangFuse agent tracing.",
-  },
-  {
-    slug: "flowpass-mobile-redesign",
-    title: "Mobile app redesign",
-    shortTitle: "Flowpass Mobile App",
-    timeframe: "4 weeks",
-    year: "2025",
-    tags: ["Mobile UX", "Social features", "React/Typescript"],
-    overview:
-      "A social experience redesign and UI patch cycle focused on reducing confusion and cleaning up edge-case presentation across the mobile app.",
-    background: "The community page of the Flowpass mobile app had no solution for clearly displaying both people in ones team and ones follow-list. This called for redesigning and rebuilding its frontend from scratch.",
-    heroImage: new URL("./img/mockups/internships/community.png", import.meta.url).href,
-    previewImage: new URL("./img/mockups/internships/community.png", import.meta.url).href,
-    solutionImage: new URL("./img/mockups/internships/alsogoing.png", import.meta.url).href,
-    solution:
-      "A display from profile images give a discreet indication of which co-workers are booked for different sessions. A drawer complements this view by providing detailed information on the bookers.",
-  },
-  {
-    slug: "bike-shop-wordpress-site",
-    title: "And-The-Revolution's Website",
-    shortTitle: "ATR Website Maintenence",
-    timeframe: "6 weeks",
-    year: "2026",
-    tags: ["Web Design + WordPress", "client work", "wordpress", "frontend"],
-    overview:
-      "Correcting flaws in design and functionality in a custom Wordpress environment",
-    background: clean(atrRaw),
-    heroImage: new URL("./img/mockups/ATR/Cykelbyggaren.png", import.meta.url).href,
-    previewImage: new URL("./img/mockups/ATR/Cykelbyggaren.png", import.meta.url).href,
-    solution:
-      `The website's custom PHP code, admin settings, and tailpress theme was examined to solve numerous issues:
-
-      - Repaired the Bike builder plugin (PHP) to make displayed images and price calculations behave correctly.
-      - Fixed the shopping cart to make it contain and display correct items. 
-      - Comprehensively unified typography and styling according to the websites design system.
-      - Fixed layout bugs on smaller screens `,
-  },
-  {
-    slug: "stronglift-assistant",
-    title: "Stronglift 5x5 Tracker",
-    shortTitle: "Stronglift",
-    timeframe: "Ongoing",
-    year: "2026",
-    tags: ["Side Project", "fitness", "personal growth"],
-    overview:
-      "A private workout companion for StrongLift 5x5 that keeps sessions focused and tracks progression over time with minimal friction.",
-    background: clean(strongliftRaw),
-    heroImage: new URL("./img/mockups/strongliftHome.png", import.meta.url).href,
-    heroImages: [
-      new URL("./img/mockups/strongliftHome.png", import.meta.url).href,
-      new URL("./img/mockups/strongLiftMidWork1.png", import.meta.url).href,
-    ],
-    previewImage: new URL("./img/mockups/strongLiftMidWork1.png", import.meta.url).href,
-    backgroundImage: new URL("./img/mockups/historyWorkForm.png", import.meta.url).href,
-    solutionImage: new URL("./img/mockups/ChartStronglift.png", import.meta.url).href,
-    solution:
-      "An app is hosted for private use as a mobile website. It keeps all numbers noted in a database, and helps setting workout weights based on ones progress. One can also add a videos to the logs to review ones form. It displays progress in charts for each exercise. Almost entirely 'vibe coded' in Cursor :)",
+const toProject = (
+  base: Omit<Project, "bodyHtml"> & { assets?: Record<string, string> },
+): Project => {
+  const rawBody = bodyBySlug.get(base.slug);
+  if (!rawBody) {
+    throw new Error(`Missing body.html for project "${base.slug}"`);
   }
 
-];
+  const bodyHtml = base.assets ? applyPlaceholders(rawBody, base.assets) : rawBody;
+  const { assets: _assets, ...rest } = base;
+
+  return mergeProjectMeta({ ...rest, bodyHtml });
+};
 
 /** Highest 4-digit year in the label, for list order (newest first). */
 const sortYearValue = (year: string): number => {
@@ -170,6 +174,6 @@ const sortYearValue = (year: string): number => {
   return Math.max(...years.map(Number));
 };
 
-export const projects: Project[] = [...baseProjects.map(mergeProjectMeta)].sort(
+export const projects: Project[] = [...baseProjects.map(toProject)].sort(
   (a, b) => sortYearValue(b.year) - sortYearValue(a.year),
 );

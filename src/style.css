@@ -260,6 +260,19 @@ body.has-custom-cursor summary {
   margin-bottom: 0;
 }
 
+.about-copy ul {
+  margin: 0.85rem 0 0;
+  padding-left: 1.15rem;
+  color: var(--text-body);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.65;
+}
+
+.about-copy li + li {
+  margin-top: 0.35rem;
+}
+
 /* About section — extra scroll room so the card can reach page center */
 #about.content-section {
   padding-bottom: 38vh;
@@ -288,7 +301,6 @@ body.has-custom-cursor summary {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Zoom in on the face — tighter crop than the old circular thumbnail */
   object-position: 52% 18%;
 }
 
@@ -603,54 +615,108 @@ body.has-custom-cursor summary {
   border-color: var(--accent);
 }
 
-/* ---- PROJECT HERO ---- */
-
-.project-page-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  gap: 2.5rem;
-  align-items: center;
-  margin-top: 2.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--border);
+.project-page-header {
+  margin-bottom: 0;
 }
 
-.project-page-hero-content {
+.project-page-footer {
+  margin-top: 2.5rem;
+}
+
+/* ---- PROJECT CONTENT STYLE GUIDE ----
+   Build each project body in content/projects/<slug>/body.html using these classes.
+   Typography defaults live on .project-content; compose freely inside it.
+
+   .proj-title          — page heading (h1)
+   .proj-lead           — intro / overview paragraph
+   .proj-meta           — year + timeframe row
+   .proj-year, .proj-timeframe, .proj-meta-sep
+   .proj-tags           — piped tag line
+   .proj-hero           — top block (title + media)
+   .proj-hero--split    — text left, media right
+   .proj-hero--bare-media — no frame on hero image
+   .proj-section        — content block with vertical spacing
+   .proj-section-label  — eyebrow label (Background, Solution, …)
+   .proj-split          — text + side media grid
+   .proj-split--media-right / --media-left
+   .proj-media           — figure wrapper
+   .proj-media--hero, --phone, --thumb, --wide, --support
+   .proj-gallery         — row of phone mockups
+   .proj-before-after    — before/after carousel section
+   ---- */
+
+.project-content {
+  margin-top: 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 2.5rem;
 }
 
-.project-page-title {
+.project-content > :first-child {
+  margin-top: 0;
+}
+
+/* Typography defaults inside project bodies */
+.project-content p {
+  margin: 0;
+  color: var(--text-body);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.project-content p + p {
+  margin-top: 0.85rem;
+}
+
+.project-content ul {
+  margin: 0.85rem 0 0;
+  padding-left: 1.15rem;
+  color: var(--text-body);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.project-content li + li {
+  margin-top: 0.35rem;
+}
+
+.proj-title {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3rem);
   line-height: 1.08;
   letter-spacing: -0.02em;
 }
 
-.project-page-meta-group {
+.proj-lead {
+  margin: 0;
+  color: var(--text-body);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.proj-meta {
   display: flex;
   align-items: baseline;
   gap: 0.45rem;
 }
 
-.project-page-year {
+.proj-year {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--muted);
 }
 
-.project-page-sep {
+.proj-meta-sep {
   color: var(--border);
   font-size: 0.82rem;
 }
 
-.project-page-timeframe {
+.proj-timeframe {
   font-size: 0.82rem;
   color: var(--muted);
 }
 
-.project-page-tags {
+.proj-tags {
   margin: 0;
   font-size: 0.68rem;
   text-transform: uppercase;
@@ -660,21 +726,77 @@ body.has-custom-cursor summary {
   line-height: 1.5;
 }
 
-.project-page-overview {
-  margin: 0;
-  color: var(--text-body);
-  font-size: 0.95rem;
-  line-height: 1.65;
+.proj-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
 }
 
-/* ---- BODY (sections) ---- */
-
-.project-page-body {
-  margin-top: 2rem;
+.proj-hero--split {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2.5rem;
+  align-items: center;
 }
 
-.project-page-hero-media {
+.proj-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.proj-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.proj-section-label {
   margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--section-label);
+  font-weight: 700;
+}
+
+.proj-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.proj-split:has(.proj-media) {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.proj-split--media-left:has(.proj-media) {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.proj-split--media-left .proj-split-text {
+  order: 2;
+}
+
+.proj-split-text {
+  min-width: 0;
+}
+
+.proj-media {
+  margin: 0;
+}
+
+.proj-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.proj-media--hero {
   border-radius: 16px;
   border: 1px solid var(--border);
   overflow: hidden;
@@ -683,194 +805,229 @@ body.has-custom-cursor summary {
     repeating-linear-gradient(-30deg, #b8896817 0 9px, #b8896808 9px 18px);
 }
 
-.project-page-hero-media--gallery {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  padding: 0;
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  overflow: visible;
+.proj-media--hero img {
+  width: auto;
+  height: clamp(320px, 52vh, 560px);
 }
 
-.project-page-hero-gallery-pane {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1312 / 2656;
-  min-width: 0;
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-}
-
-.project-page-hero-gallery-pane + .project-page-hero-gallery-pane {
-  border-left: none;
-}
-
-.project-page-hero-img {
-  display: block;
-  width: 100%;
-  height: clamp(220px, 32vw, 380px);
-  object-fit: cover;
-}
-
-.project-page-hero-media--bike-shop-wordpress-site .project-page-hero-img {
-  object-fit: cover;
-  object-position: 100% 50%;
-  transform: scale(1.1);
-  transform-origin: 100% 50%;
-}
-
-.project-page-hero-media--flowpass-mobile-redesign .project-page-hero-img {
-  object-fit: contain;
-}
-
-.project-page-hero-media--flowpass-mobile-redesign {
+.proj-hero--bare-media .proj-media--hero {
   background: transparent;
   border: 0;
 }
 
-.project-page-hero-img--gallery {
-  display: block;
+.proj-media--phone img {
+  width: auto;
+  height: clamp(320px, 52vh, 560px);
+}
+
+.proj-media--thumb {
+  width: clamp(120px, 22vw, 170px);
+}
+
+.proj-media--thumb img {
+  border-radius: 12px;
+}
+
+.proj-media--wide img {
+  border-radius: 12px;
+}
+
+.proj-media--wide {
+  margin-top: 0.85rem;
+}
+
+.proj-gallery {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.proj-gallery .proj-media--phone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(260px, 38vh, 400px);
+  width: auto;
+  aspect-ratio: 1312 / 2656;
+}
+
+.proj-gallery .proj-media--phone img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-.project-page-hero-placeholder {
-  width: 100%;
-  height: clamp(220px, 32vw, 380px);
-  background:
-    linear-gradient(145deg, #faf3eb 0%, #eadfd2 62%),
-    repeating-linear-gradient(-30deg, #b8896814 0 9px, #b8896808 9px 18px);
-}
-
-.project-page-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-.project-page-section {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.project-page-section:has(.project-page-section-media) {
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.project-page-section--media-left:has(.project-page-section-media) {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-.project-page-section--media-left .project-page-section-text {
-  order: 2;
-}
-
-.project-page--flowpass-mobile-redesign .project-page-sections {
+/* Flowpass: solution mockup pinned beside sections */
+.project-page--flowpass-mobile-redesign .proj-section--with-support {
   --flowpass-support-width: clamp(140px, 18vw, 180px);
   --flowpass-support-gap: 2rem;
   position: relative;
   min-height: 410px;
-}
-
-.project-page--flowpass-mobile-redesign .project-page-section {
   width: calc(100% - var(--flowpass-support-width) - var(--flowpass-support-gap));
 }
 
-.project-page--flowpass-mobile-redesign .project-page-section--solution:has(.project-page-section-media) {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.project-page--flowpass-mobile-redesign .project-page-section--solution .project-page-section-text {
-  order: 0;
-}
-
-.project-page--flowpass-mobile-redesign .project-page-section--solution .project-page-section-media {
+.project-page--flowpass-mobile-redesign .proj-media--support {
   position: absolute;
   top: 0.35rem;
-  right: 0;
+  right: calc(-1 * (var(--flowpass-support-width) + var(--flowpass-support-gap)));
   width: var(--flowpass-support-width);
 }
 
-.project-page--thesis-work .project-page-section:has(.project-page-section-media) {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.project-page--thesis-work .project-page-section--media-left .project-page-section-text {
-  order: 0;
-}
-
-.project-page--thesis-work .project-page-section-media {
-  width: 100%;
-}
-
-.project-page-section-text {
-  min-width: 0;
-}
-
-.project-page-section-label {
-  margin: 0 0 0.6rem;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--section-label);
-  font-weight: 700;
-}
-
-.project-page-section p {
-  margin: 0;
-  color: var(--text-body);
-  font-size: 0.92rem;
-  line-height: 1.65;
-}
-
-.project-page-section p + p {
-  margin-top: 0.85rem;
-}
-
-.project-page-section ul {
-  margin: 0;
-  padding-left: 1.15rem;
-  color: var(--text-body);
-  font-size: 0.92rem;
-  line-height: 1.65;
-}
-
-.project-page-section li + li {
-  margin-top: 0.35rem;
-}
-
-.project-page-section p + ul,
-.project-page-section ul + p {
-  margin-top: 0.85rem;
-}
-
-.project-page-section-media {
-  margin: 0;
-  width: clamp(120px, 22vw, 170px);
-}
-
-.project-page-section-media img {
-  display: block;
-  width: 100%;
-  height: auto;
+.project-page--flowpass-mobile-redesign .proj-media--support img {
   border-radius: 12px;
 }
 
-/* ---- SIBLING NAV ---- */
+/* ---- BEFORE / AFTER CAROUSEL ---- */
+
+.proj-before-after {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Carousel shell ─────────────────────────────── */
+.before-after-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Header row ─────────────────────────────────── */
+.before-after-carousel-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.before-after-carousel-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.before-after-section-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--section-label);
+}
+
+.before-after-carousel-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* ── Arrow controls ─────────────────────────────── */
+.before-after-carousel-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.before-after-counter {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  min-width: 2.8rem;
+  text-align: center;
+}
+
+.before-after-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.before-after-btn:hover:not(:disabled) {
+  background: var(--bg-soft);
+  border-color: var(--line);
+  color: var(--accent);
+}
+
+.before-after-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ── Slide track ────────────────────────────────── */
+.before-after-track {
+  position: relative;
+}
+
+.before-after-slide {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.before-after-slide--active {
+  display: grid;
+}
+
+/* ── Figure ─────────────────────────────────────── */
+.before-after-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.before-after-figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.before-after-caption {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ── Placeholder ────────────────────────────────── */
+.before-after-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  border: 1.5px dashed var(--line);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--bg-soft),
+    var(--bg-soft) 6px,
+    var(--bg) 6px,
+    var(--bg) 14px
+  );
+  opacity: 0.7;
+}
 
 .project-page-sibling-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 2.5rem;
   padding-top: 1.75rem;
   border-top: 1px solid var(--border);
 }
@@ -950,32 +1107,36 @@ body.has-custom-cursor summary {
     margin: 0 0 0.4rem 0.15rem;
   }
 
-  .project-page-hero {
+  .proj-hero--split {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 
-  .project-page-section:has(.project-page-section-media),
-  .project-page-section--media-left:has(.project-page-section-media) {
+  .proj-media--hero img,
+  .proj-media--phone img {
+    width: 100%;
+    height: auto;
+  }
+
+  .proj-split:has(.proj-media),
+  .proj-split--media-left:has(.proj-media) {
     grid-template-columns: 1fr;
     justify-items: center;
   }
 
-  .project-page-section--media-left .project-page-section-text {
+  .proj-split--media-left .proj-split-text {
     order: 0;
   }
 
-  .project-page--flowpass-mobile-redesign .project-page-sections {
+  .project-page--flowpass-mobile-redesign .proj-section--with-support {
     min-height: 0;
-  }
-
-  .project-page--flowpass-mobile-redesign .project-page-section {
     width: 100%;
   }
 
-  .project-page--flowpass-mobile-redesign .project-page-section--solution .project-page-section-media {
+  .project-page--flowpass-mobile-redesign .proj-media--support {
     position: static;
     width: clamp(120px, 42vw, 170px);
+    margin-top: 1rem;
   }
 
 }
@@ -985,14 +1146,8 @@ body.has-custom-cursor summary {
     padding: 0 1rem;
   }
 
-  .about-card {
-    flex-direction: column;
-  }
-
   .about-card-figure {
-    flex: none;
-    width: 100%;
-    height: min(220px, 55vw);
+    width: clamp(100px, 30vw, 140px);
   }
 
   #about.content-section {

@@ -23,6 +23,7 @@ export const profile = {
 };
 
 export const aboutParagraphs = [clean(aboutPrimaryRaw)];
+export const aboutText = aboutPrimaryRaw;
 
 const rawExperienceItems = [
   {

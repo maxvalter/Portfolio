@@ -1,3 +1,6 @@
 I'm a frontend engineer and interaction designer with a master's degree at Chalmers, where my thesis put me inside a production AI system — building an agentic LLM chatbot and researching how enterprise users actually trust and relate to AI tools.
 
 I care about clean architecture, but I care just as much about whether the thing I'm building makes sense to the person using it. That combination — technical depth with a user-centered lens — is where I do my best work.
+
+- MSc Interaction Design and Technologies, Chalmers University of Technology
+- BSc Computer Science and Engineering, Chalmers University of Technology

@@ -1,5 +1,5 @@
 import "./style.css";
-import { aboutParagraphs, experienceItems, profile } from "./content";
+import { aboutText, experienceItems, profile } from "./content";
 import profileImage from "../content/img/maxproffsigt.jpg";
 import { projects } from "./projects";
 
@@ -57,40 +57,12 @@ const renderParagraphs = (value: string) =>
     .map(renderParagraphBlock)
     .join("");
 
-const renderProjectHeroMedia = (project: (typeof projects)[number]) => {
-  const images =
-    project.heroImages?.length
-      ? project.heroImages
-      : project.heroImage
-        ? [project.heroImage]
-        : [];
-
-  if (images.length === 0) {
-    return `<div class="project-page-hero-placeholder" aria-hidden="true"></div>`;
-  }
-
-  const isGallery = images.length > 1;
-  const mediaClass = isGallery
-    ? `project-page-hero-media project-page-hero-media--gallery project-page-hero-media--${escapeHtml(project.slug)}`
-    : `project-page-hero-media project-page-hero-media--${escapeHtml(project.slug)}`;
-
-  return `
-    <figure class="${mediaClass}" aria-label="${escapeHtml(project.title)}">
-      ${
-        isGallery
-          ? images
-              .map(
-                (src) => `
-                  <div class="project-page-hero-gallery-pane">
-                    <img src="${src}" alt="" class="project-page-hero-img project-page-hero-img--gallery" loading="lazy" />
-                  </div>`,
-              )
-              .join("")
-          : `<img src="${images[0]}" alt="" class="project-page-hero-img" loading="lazy" />`
-      }
-    </figure>
-  `;
-};
+const aboutMarkup = aboutText
+  .split(/\n\s*\n/)
+  .map((block) => block.trim())
+  .filter(Boolean)
+  .map(renderParagraphBlock)
+  .join("");
 
 const getTimelineSortValue = (item: (typeof experienceItems)[number]) => {
   if (!item.time.end) {
@@ -129,8 +101,6 @@ const experienceCards = sortedExperienceItems
     `,
   )
   .join("");
-
-const aboutMarkup = aboutParagraphs.map((paragraph) => `<p>${paragraph}</p>`).join("");
 
 const setActiveSection = (sectionId: string, navLinks: HTMLAnchorElement[]) => {
   navLinks.forEach((link) => {
@@ -237,6 +207,49 @@ const renderHome = () => {
   `;
 };
 
+const setupBeforeAfterCarousels = () => {
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((carousel) => {
+    const slides = Array.from(carousel.querySelectorAll<HTMLElement>("[data-slide]"));
+    if (slides.length === 0) {
+      return;
+    }
+
+    const titleEl = carousel.querySelector<HTMLElement>("[data-carousel-title]");
+    const counterEl = carousel.querySelector<HTMLElement>("[data-carousel-counter]");
+    const prevBtn = carousel.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+    const nextBtn = carousel.querySelector<HTMLButtonElement>("[data-carousel-next]");
+    const labels = slides.map((slide) => slide.dataset.carouselLabel ?? "");
+
+    let current = slides.findIndex((slide) => slide.classList.contains("before-after-slide--active"));
+    if (current < 0) {
+      current = 0;
+    }
+
+    const goTo = (index: number) => {
+      slides[current].classList.remove("before-after-slide--active");
+      slides[current].setAttribute("aria-hidden", "true");
+      current = (index + slides.length) % slides.length;
+      slides[current].classList.add("before-after-slide--active");
+      slides[current].setAttribute("aria-hidden", "false");
+      if (titleEl) {
+        titleEl.textContent = labels[current];
+      }
+      if (counterEl) {
+        counterEl.textContent = `${current + 1} / ${slides.length}`;
+      }
+    };
+
+    if (prevBtn) {
+      prevBtn.disabled = slides.length <= 1;
+      prevBtn.addEventListener("click", () => goTo(current - 1));
+    }
+    if (nextBtn) {
+      nextBtn.disabled = slides.length <= 1;
+      nextBtn.addEventListener("click", () => goTo(current + 1));
+    }
+  });
+};
+
 const renderProjectDetail = (slug: string) => {
   const project = projects.find((item) => item.slug === slug);
   if (!project) {
@@ -250,61 +263,26 @@ const renderProjectDetail = (slug: string) => {
 
   app.innerHTML = `
     <main class="project-page project-page--${escapeHtml(project.slug)}">
-      <a href="#projects" class="project-back-link">← Back to projects</a>
-
-      <header class="project-page-hero">
-        <div class="project-page-hero-content">
-          <h1 class="project-page-title">${escapeHtml(project.title)}</h1>
-          <div class="project-page-meta-group">
-            <span class="project-page-year">${escapeHtml(project.year)}</span>
-            <span class="project-page-sep" aria-hidden="true">·</span>
-            <span class="project-page-timeframe">${escapeHtml(project.timeframe)}</span>
-          </div>
-          ${project.tags.length > 0 ? `<p class="project-page-tags">${formatTagsPiped(project.tags)}</p>` : ""}
-          <p class="project-page-overview">${escapeHtml(project.overview)}</p>
-        </div>
-        ${renderProjectHeroMedia(project)}
+      <header class="project-page-header">
+        <a href="#projects" class="project-back-link">← Back to projects</a>
       </header>
 
-      <div class="project-page-body">
-        <section class="project-page-sections">
-          <article class="project-page-section project-page-section--media-right">
-            <div class="project-page-section-text">
-              <h2 class="project-page-section-label">Background</h2>
-              ${renderParagraphs(project.background)}
-            </div>
-            ${project.backgroundImage
-              ? `<figure class="project-page-section-media" aria-hidden="true">
-                   <img src="${project.backgroundImage}" alt="" loading="lazy" />
-                 </figure>`
-              : ""
-            }
-          </article>
-          <article class="project-page-section project-page-section--solution project-page-section--media-left">
-            <div class="project-page-section-text">
-              <h2 class="project-page-section-label">Solution</h2>
-              ${renderParagraphs(project.solution)}
-            </div>
-            ${project.solutionImage
-              ? `<figure class="project-page-section-media" aria-hidden="true">
-                   <img src="${project.solutionImage}" alt="" loading="lazy" />
-                 </figure>`
-              : ""
-            }
-          </article>
-        </section>
+      <div class="project-content">
+        ${project.bodyHtml}
       </div>
 
-      <nav class="project-page-sibling-nav" aria-label="Project navigation">
-        ${prevProject
-          ? `<a href="#project/${prevProject.slug}" class="project-sibling-link">← Previous Project</a>`
-          : `<span></span>`
-        }
-        ${nextProject
-          ? `<a href="#project/${nextProject.slug}" class="project-sibling-link project-sibling-link--next">Next Project →</a>`
-          : `<span></span>`
-        }
-      </nav>
+      <footer class="project-page-footer">
+        <nav class="project-page-sibling-nav" aria-label="Project navigation">
+          ${prevProject
+            ? `<a href="#project/${prevProject.slug}" class="project-sibling-link">← Previous Project</a>`
+            : `<span></span>`
+          }
+          ${nextProject
+            ? `<a href="#project/${nextProject.slug}" class="project-sibling-link project-sibling-link--next">Next Project →</a>`
+            : `<span></span>`
+          }
+        </nav>
+      </footer>
     </main>
   `;
 };
@@ -374,6 +352,7 @@ const renderApp = () => {
   const projectSlug = getProjectHashSlug();
   if (projectSlug) {
     renderProjectDetail(projectSlug);
+    setupBeforeAfterCarousels();
     return;
   }
 
