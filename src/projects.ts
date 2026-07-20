@@ -27,6 +27,15 @@ const projectBodyModules = import.meta.glob("../content/projects/*/body.html", {
   import: "default",
 }) as Record<string, string>;
 
+const projectImageModules = import.meta.glob(
+  "./img/**/*.{png,jpg,jpeg,gif,webp,svg}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+) as Record<string, string>;
+
 const slugFromProjectPath = (path: string, file: string): string | null => {
   const normalized = path.replaceAll("\\", "/");
   const match = normalized.match(new RegExp(`/projects/([^/]+)/${file}$`));
@@ -76,7 +85,13 @@ for (const [path, html] of Object.entries(projectBodyModules)) {
 const applyPlaceholders = (html: string, assets: Record<string, string>) =>
   html.replace(/\{\{(\w+)\}\}/g, (_, key: string) => assets[key] ?? "");
 
-const img = (path: string) => new URL(path, import.meta.url).href;
+const img = (path: string) => {
+  const assetUrl = projectImageModules[path];
+  if (!assetUrl) {
+    throw new Error(`Missing project image "${path}"`);
+  }
+  return assetUrl;
+};
 
 /** Card metadata + asset placeholders per slug. Body markup lives in `content/projects/<slug>/body.html`. */
 const baseProjects: Array<Omit<Project, "bodyHtml"> & { assets?: Record<string, string> }> = [
