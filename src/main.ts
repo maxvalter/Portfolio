@@ -207,7 +207,7 @@ const renderHome = () => {
   `;
 };
 
-const setupBeforeAfterZoom = () => {
+const setupProjectImageZoom = () => {
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hasCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 
@@ -215,31 +215,32 @@ const setupBeforeAfterZoom = () => {
     return;
   }
 
-  const ZOOM_SCALE = 3;
+  const PROJECT_IMAGE_ZOOM_SCALE = 1.8;
+  const BEFORE_AFTER_ZOOM_SCALE = 3;
 
-  document.querySelectorAll<HTMLImageElement>(".before-after-figure img").forEach((img) => {
-    if (img.parentElement?.dataset.zoom !== undefined) {
+  const setupZoom = (images: HTMLImageElement[], zoom: HTMLElement, scale: number) => {
+    if (zoom.dataset.zoom !== undefined) {
       return;
     }
 
-    const zoom = document.createElement("div");
-    zoom.className = "before-after-zoom";
     zoom.dataset.zoom = "";
-    img.parentNode?.insertBefore(zoom, img);
-    zoom.appendChild(img);
 
     const reset = () => {
       zoom.classList.remove("is-zooming");
-      img.style.transform = "";
-      img.style.transformOrigin = "";
+      images.forEach((img) => {
+        img.style.transform = "";
+        img.style.transformOrigin = "";
+      });
     };
 
     const updateZoom = (clientX: number, clientY: number) => {
-      const rect = zoom.getBoundingClientRect();
-      const x = ((clientX - rect.left) / rect.width) * 100;
-      const y = ((clientY - rect.top) / rect.height) * 100;
-      img.style.transformOrigin = `${x}% ${y}%`;
-      img.style.transform = `scale(${ZOOM_SCALE})`;
+      images.forEach((img) => {
+        const rect = img.parentElement?.getBoundingClientRect() ?? img.getBoundingClientRect();
+        const x = ((clientX - rect.left) / rect.width) * 100;
+        const y = ((clientY - rect.top) / rect.height) * 100;
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = `scale(${scale})`;
+      });
     };
 
     zoom.addEventListener("pointerenter", (event) => {
@@ -252,6 +253,38 @@ const setupBeforeAfterZoom = () => {
     });
 
     zoom.addEventListener("pointerleave", reset);
+  };
+
+  document.querySelectorAll<HTMLElement>(".project-content .proj-gallery").forEach((zoom) => {
+    const images = Array.from(zoom.querySelectorAll<HTMLImageElement>(".proj-media > img"));
+    if (images.length === 0) {
+      return;
+    }
+
+    zoom.classList.add("project-image-zoom");
+    setupZoom(images, zoom, PROJECT_IMAGE_ZOOM_SCALE);
+  });
+
+  document.querySelectorAll<HTMLImageElement>(".project-content .proj-media > img").forEach((img) => {
+    if (img.closest(".proj-gallery")) {
+      return;
+    }
+
+    const zoom = img.parentElement;
+    if (!zoom) {
+      return;
+    }
+
+    zoom.classList.add("project-image-zoom");
+    setupZoom([img], zoom, PROJECT_IMAGE_ZOOM_SCALE);
+  });
+
+  document.querySelectorAll<HTMLImageElement>(".before-after-figure > img").forEach((img) => {
+    const zoom = document.createElement("div");
+    zoom.className = "project-image-zoom before-after-zoom";
+    img.parentNode?.insertBefore(zoom, img);
+    zoom.appendChild(img);
+    setupZoom([img], zoom, BEFORE_AFTER_ZOOM_SCALE);
   });
 };
 
@@ -410,7 +443,7 @@ const renderApp = () => {
   if (projectSlug) {
     renderProjectDetail(projectSlug);
     setupBeforeAfterCarousels();
-    setupBeforeAfterZoom();
+    setupProjectImageZoom();
     return;
   }
 

@@ -36,7 +36,7 @@ body.has-custom-cursor,
 body.has-custom-cursor a,
 body.has-custom-cursor button,
 body.has-custom-cursor summary,
-body.has-custom-cursor .before-after-zoom {
+body.has-custom-cursor .project-image-zoom {
   cursor: none;
 }
 
@@ -818,6 +818,17 @@ body.has-custom-cursor .before-after-zoom {
   margin: 0;
 }
 
+.project-image-zoom {
+  overflow: hidden;
+  cursor: none;
+  touch-action: none;
+}
+
+.project-image-zoom img {
+  transform-origin: center center;
+  will-change: transform;
+}
+
 .proj-media img {
   display: block;
   width: 100%;
@@ -1049,11 +1060,8 @@ body.has-custom-cursor .before-after-zoom {
 
 .before-after-zoom {
   width: 100%;
-  overflow: hidden;
   border-radius: 10px;
   border: 1px solid var(--border);
-  cursor: none;
-  touch-action: none;
 }
 
 .before-after-zoom img {
@@ -1062,8 +1070,6 @@ body.has-custom-cursor .before-after-zoom {
   display: block;
   border: none;
   border-radius: 0;
-  transform-origin: center center;
-  will-change: transform;
 }
 
 .before-after-figure > img {
