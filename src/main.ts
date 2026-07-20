@@ -207,6 +207,54 @@ const renderHome = () => {
   `;
 };
 
+const setupBeforeAfterZoom = () => {
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const hasCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+
+  if (prefersReducedMotion || hasCoarsePointer) {
+    return;
+  }
+
+  const ZOOM_SCALE = 3;
+
+  document.querySelectorAll<HTMLImageElement>(".before-after-figure img").forEach((img) => {
+    if (img.parentElement?.dataset.zoom !== undefined) {
+      return;
+    }
+
+    const zoom = document.createElement("div");
+    zoom.className = "before-after-zoom";
+    zoom.dataset.zoom = "";
+    img.parentNode?.insertBefore(zoom, img);
+    zoom.appendChild(img);
+
+    const reset = () => {
+      zoom.classList.remove("is-zooming");
+      img.style.transform = "";
+      img.style.transformOrigin = "";
+    };
+
+    const updateZoom = (clientX: number, clientY: number) => {
+      const rect = zoom.getBoundingClientRect();
+      const x = ((clientX - rect.left) / rect.width) * 100;
+      const y = ((clientY - rect.top) / rect.height) * 100;
+      img.style.transformOrigin = `${x}% ${y}%`;
+      img.style.transform = `scale(${ZOOM_SCALE})`;
+    };
+
+    zoom.addEventListener("pointerenter", (event) => {
+      zoom.classList.add("is-zooming");
+      updateZoom(event.clientX, event.clientY);
+    });
+
+    zoom.addEventListener("pointermove", (event) => {
+      updateZoom(event.clientX, event.clientY);
+    });
+
+    zoom.addEventListener("pointerleave", reset);
+  });
+};
+
 const setupBeforeAfterCarousels = () => {
   document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((carousel) => {
     const slides = Array.from(carousel.querySelectorAll<HTMLElement>("[data-slide]"));
@@ -215,10 +263,12 @@ const setupBeforeAfterCarousels = () => {
     }
 
     const titleEl = carousel.querySelector<HTMLElement>("[data-carousel-title]");
+    const descriptionEl = carousel.querySelector<HTMLElement>("[data-carousel-description]");
     const counterEl = carousel.querySelector<HTMLElement>("[data-carousel-counter]");
     const prevBtn = carousel.querySelector<HTMLButtonElement>("[data-carousel-prev]");
     const nextBtn = carousel.querySelector<HTMLButtonElement>("[data-carousel-next]");
     const labels = slides.map((slide) => slide.dataset.carouselLabel ?? "");
+    const descriptions = slides.map((slide) => slide.dataset.carouselDescription ?? "");
 
     let current = slides.findIndex((slide) => slide.classList.contains("before-after-slide--active"));
     if (current < 0) {
@@ -234,10 +284,17 @@ const setupBeforeAfterCarousels = () => {
       if (titleEl) {
         titleEl.textContent = labels[current];
       }
+      if (descriptionEl) {
+        const description = descriptions[current];
+        descriptionEl.textContent = description;
+        descriptionEl.hidden = description.length === 0;
+      }
       if (counterEl) {
         counterEl.textContent = `${current + 1} / ${slides.length}`;
       }
     };
+
+    goTo(current);
 
     if (prevBtn) {
       prevBtn.disabled = slides.length <= 1;
@@ -353,6 +410,7 @@ const renderApp = () => {
   if (projectSlug) {
     renderProjectDetail(projectSlug);
     setupBeforeAfterCarousels();
+    setupBeforeAfterZoom();
     return;
   }
 

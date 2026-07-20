@@ -46,7 +46,7 @@ const rawExperienceItems = [
       start: new Date(2025, 5),
       end: new Date(2025, 9),
     },
-    description: "Built and maintained the frontend of Flowpass's admin panel and mobile app — a web application for managing flexible office and coworking bookings. Worked across the full frontend stack with React, TypeScript, and GraphQL, shipping features directly used by operators on the platform.",
+    description: "Built and maintained the frontend of Flowpass's admin panel and mobile app, a web application for managing flexible office and coworking bookings. Worked across the full frontend stack with React, TypeScript, and GraphQL, shipping features directly used by operators on the platform.",
     details:
       "Took ownership of production features from design handoff to release, including booking flows, list/detail views, and internal tooling for workspace operators. I collaborated daily with product and backend teammates and helped improve UI consistency and performance in high-traffic parts of the app.",
     images: [
@@ -63,7 +63,7 @@ const rawExperienceItems = [
       start: new Date(2025, 9),
       end: new Date(2026, 2),
     },
-    description: "Designed and built an agentic chatbot for production in Flowpass's admin panel — an LLM with tool-calling against a live database, letting operators query and navigate the platform through natural language. The academic layer focused on how enterprise users form trust in LLM-driven work tools, with model output evaluation for precision and relevance in a real production environment.",
+    description: "Designed and built an agentic chatbot for production in Flowpass's admin panel: an LLM with tool-calling against a live database, letting operators query and navigate the platform through natural language. The academic layer focused on how enterprise users form trust in LLM-driven work tools, with model output evaluation for precision and relevance in a real production environment.",
     details:
       "The thesis covered both implementation and evaluation. I designed prompts, tool schemas, and fallback behavior for safer responses in production, then studied trust formation through qualitative feedback and output quality measurements. The result was a practical assistant embedded in a real operator workflow.",
     images: [

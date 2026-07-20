@@ -87,7 +87,7 @@ const baseProjects: Array<Omit<Project, "bodyHtml"> & { assets?: Record<string, 
     year: "2025",
     tags: ["Research + Product Design", "Agentic AI", "LangChain", "UX"],
     overview:
-      "An agentic chatbot for the Flowpass platform, built with LangGraph and custom tools to answer users based on their own environment data.",
+      "An agentic chatbot for the Flowpass platform, built with LangGraph and custom tools that answer questions using each user's environment data.",
     previewImage: img("./img/mockups/thesis/chatUI.png"),
     assets: {
       heroImage: img("./img/mockups/thesis/chatUI.png"),
@@ -101,7 +101,7 @@ const baseProjects: Array<Omit<Project, "bodyHtml"> & { assets?: Record<string, 
     year: "2025",
     tags: ["Mobile UX", "Social features", "React/Typescript"],
     overview:
-      "A social experience redesign and UI patch cycle focused on reducing confusion and cleaning up edge-case presentation across the mobile app.",
+      "A social experience redesign and UI patch cycle focused on reducing confusion and tightening edge-case presentation across the mobile app.",
     previewImage: img("./img/mockups/internships/community.png"),
     assets: {
       heroImage: img("./img/mockups/internships/community.png"),
@@ -111,13 +111,20 @@ const baseProjects: Array<Omit<Project, "bodyHtml"> & { assets?: Record<string, 
   {
     slug: "bike-shop-wordpress-site",
     title: "ATR's Website Cleanup",
-    shortTitle: "",
+    shortTitle: "ATR Website",
     year: "2026",
     tags: ["Web Design + WordPress", "client work", "wordpress", "frontend"],
-    overview: "Correcting flaws in design and functionality in a custom Wordpress environment",
-    previewImage: img("./img/mockups/ATR/Cykelbyggaren.png"),
+    overview:
+      "Fixing design and functionality issues in a custom WordPress environment for a Stockholm bike shop.",
+    previewImage: img("./img/mockups/ATR/hero.png"),
     assets: {
-      heroImage: img("./img/mockups/ATR/Cykelbyggaren.png"),
+      heroImage: img("./img/mockups/ATR/mainpage.png"),
+      bbBefore: img("./img/mockups/ATR/bbBefore2.png"),
+      bbAfter: img("./img/mockups/ATR/bbAfter2.png"),
+      checkoutBefore: img("./img/mockups/ATR/CheckoutBefore.png"),
+      checkoutAfter: img("./img/mockups/ATR/CheckoutAfter.png"),
+      fontFamilyBefore: img("./img/mockups/ATR/FontFamilyBefore.png"),
+      fontFamilyAfter: img("./img/mockups/ATR/FontFamilyAfter.png"),
     },
   },
   {
@@ -127,7 +134,7 @@ const baseProjects: Array<Omit<Project, "bodyHtml"> & { assets?: Record<string, 
     year: "2026",
     tags: ["Side Project", "fitness", "personal growth"],
     overview:
-      "A private workout companion for StrongLift 5x5 that keeps sessions focused and tracks progression over time with minimal friction.",
+      "A workout tracker for StrongLift 5×5, logging progress within each session and gains over time.",
     previewImage: img("./img/mockups/strongLiftMidWork1.png"),
     assets: {
       heroImage1: img("./img/mockups/strongliftHome.png"),
