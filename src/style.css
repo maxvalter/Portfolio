@@ -286,7 +286,11 @@ body.has-custom-cursor .project-image-zoom {
   border-radius: 16px;
   background: var(--card);
   overflow: hidden;
-  box-shadow: 0 2px 14px #2c241c0a;
+  transition: transform 200ms ease;
+}
+
+.about-card:hover {
+  transform: scale(1.015);
 }
 
 .about-card-figure {
@@ -303,6 +307,11 @@ body.has-custom-cursor .project-image-zoom {
   height: 100%;
   object-fit: cover;
   object-position: 52% 18%;
+  transition: transform 280ms ease;
+}
+
+.about-card:hover .profile-image {
+  transform: scale(1.025);
 }
 
 .about-card-body {
@@ -464,13 +473,12 @@ body.has-custom-cursor .project-image-zoom {
   text-decoration: none;
   color: var(--text);
   overflow: hidden;
-  transition: box-shadow 200ms ease, transform 200ms ease;
+  transition: transform 200ms ease;
 }
 
 .project-card:hover,
 .project-card:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px #2c241c1a;
+  transform: scale(1.015);
 }
 
 .project-card-thumb {

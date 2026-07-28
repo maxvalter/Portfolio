@@ -36,7 +36,7 @@ Max studied computer science (with a master's degree) and has hands-on experienc
 - **Visual suggestion:** Before/after split screenshot, or brand imagery with overlay
 - **Tone:** Grounded, confident, slightly playful
 
-### 3. Stronglift Tracker (Personal Project)
+### 3. Stronglift Logger (Personal Project)
 - **Headline:** Track workouts and stay focused
 - **Description:** A personal web app built around the Stronglift 5×5 training programme. Lets Max log sessions, track progression over time, and access assistive features. No over-engineering — just a tool that solves a real personal need.
 - **Tags:** Personal project, Frontend, Data & tracking, Self-initiated

@@ -36,8 +36,8 @@
   <p>
     And-The-Revolution is a bicycle shop in central Stockholm where customers
     configure custom builds when making a purchase. The site runs on WordPress
-    with Tailpress and a custom Bikebuilder plugin. Both the plugin and the site
-    as a whole had long-standing bugs and usability problems.
+    with Tailpress and a custom Bikebuilder plugin. Both the Bikebuilder and the
+    site as a whole had long-standing bugs and usability problems.
   </p>
 </section>
 
@@ -85,7 +85,7 @@
         >
           &#8592;
         </button>
-        <span class="before-after-counter" data-carousel-counter>1 / 3</span>
+        <span class="before-after-counter" data-carousel-counter>1 / 4</span>
         <button class="before-after-btn" data-carousel-next aria-label="Next">
           &#8594;
         </button>
@@ -119,6 +119,30 @@
       <div
         class="before-after-slide"
         data-slide="1"
+        data-carousel-label="Product gallery"
+        data-carousel-description="Fixed the WooCommerce product gallery so images load and navigate correctly on product pages."
+        aria-hidden="true"
+      >
+        <figure class="before-after-figure">
+          <img
+            src="{{wooGalleryBefore}}"
+            alt="Product gallery before fixes"
+            loading="lazy"
+          />
+          <figcaption class="before-after-caption">Before</figcaption>
+        </figure>
+        <figure class="before-after-figure">
+          <img
+            src="{{wooGalleryAfter}}"
+            alt="Product gallery after fixes"
+            loading="lazy"
+          />
+          <figcaption class="before-after-caption">After</figcaption>
+        </figure>
+      </div>
+      <div
+        class="before-after-slide"
+        data-slide="2"
         data-carousel-label="Checkout"
         data-carousel-description="Corrected shipping options in checkout, added a 'remove all'-function, and corrected styling."
         aria-hidden="true"
@@ -142,7 +166,7 @@
       </div>
       <div
         class="before-after-slide"
-        data-slide="2"
+        data-slide="3"
         data-carousel-label="Typography &amp; styling"
         data-carousel-description="Unified product card typography so titles and prices use consistent sans-serif letterforms across the catalog."
         aria-hidden="true"

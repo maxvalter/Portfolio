@@ -27,14 +27,18 @@ const projectBodyModules = import.meta.glob("../content/projects/*/body.html", {
   import: "default",
 }) as Record<string, string>;
 
-const projectImageModules = import.meta.glob(
-  "./img/**/*.{png,jpg,jpeg,gif,webp,svg}",
-  {
+const projectImageModules = {
+  ...import.meta.glob("./img/**/*.{png,jpg,jpeg,gif,webp,svg}", {
     eager: true,
     query: "?url",
     import: "default",
-  },
-) as Record<string, string>;
+  }),
+  ...import.meta.glob("../content/gif/**/*.{png,jpg,jpeg,gif,webp,svg}", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+} as Record<string, string>;
 
 const slugFromProjectPath = (path: string, file: string): string | null => {
   const normalized = path.replaceAll("\\", "/");
@@ -140,16 +144,18 @@ const baseProjects: Array<Omit<Project, "bodyHtml"> & { assets?: Record<string, 
       checkoutAfter: img("./img/mockups/ATR/CheckoutAfter.png"),
       fontFamilyBefore: img("./img/mockups/ATR/FontFamilyBefore.png"),
       fontFamilyAfter: img("./img/mockups/ATR/FontFamilyAfter.png"),
+      wooGalleryBefore: img("../content/gif/woogallerybefore.gif"),
+      wooGalleryAfter: img("../content/gif/woogalleryafter.gif"),
     },
   },
   {
     slug: "stronglift-assistant",
-    title: "Stronglift 5x5 Tracker",
+    title: "Stronglift 5x5 Logger",
     shortTitle: "Stronglift",
     year: "2026",
     tags: ["Side Project", "fitness", "personal growth"],
     overview:
-      "A workout tracker for StrongLift 5×5, logging progress within each session and gains over time.",
+      "A workout logger for StrongLift 5×5, logging progress within each session and gains over time.",
     previewImage: img("./img/mockups/strongLiftMidWork1.png"),
     assets: {
       heroImage1: img("./img/mockups/strongliftHome.png"),
