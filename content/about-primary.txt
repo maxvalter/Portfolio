@@ -1,5 +1,5 @@
 Hello! I'm Max — an interaction designer with an engineering base. I am intrigued by designing intuitive and minimally cluttered interfaces. I may obsess over anything from color palette and layout, to the small animations that tell someone their action is recognized.
 
-Most of my hands-on work has been AI-focused, both in work process and the products themselves. My master's thesis was an agentic chatbot shipped into a startups live SaaS product, with writing on the performance stability of ai agents. At also interned at the same startup, solving problems in their mobile UI and learning React and TypeScript in the process. 
+Most of my hands-on work has been AI-focused, both in work process and the products themselves. My master's thesis was an agentic chatbot shipped into a startup's live SaaS product, with writing on the performance stability of AI agents. I also interned at the same startup, solving problems in their mobile UI and learning React and TypeScript in the process.
 
 The projects above present both professional and hobby experience. 
