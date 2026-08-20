@@ -18,7 +18,7 @@ export type ExperienceImage = {
 
 export const profile = {
   name: "Max Adolfsson",
-  title: "Interaction Designer",
+  title: "Frontend Designer",
   tagline: aboutMinimalRaw,
 };
 
